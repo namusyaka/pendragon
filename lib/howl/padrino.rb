@@ -1,4 +1,4 @@
-require File.expand_path("../howl") unless defined?(Howl)
+require File.expand_path("../../howl", __FILE__) unless defined?(Howl)
 
 %w[
   core
