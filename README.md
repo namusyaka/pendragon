@@ -106,7 +106,7 @@ class App < Padrino::Application
   register Howl::Padrino
 
   get :index do
-    render "show/index"
+    "hello howl!"
   end
 
   get :users, :map => "/users/:user_id/", :user_id => /\d+/ do |user_id|
