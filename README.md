@@ -1,5 +1,7 @@
 # Howl
 
+[![Build Status](https://travis-ci.org/namusyaka/howl.png)](https://travis-ci.org/namusyaka/howl)
+
 A http router for Rack and Padrino.
 
 Howl works only in Ruby2.0.
