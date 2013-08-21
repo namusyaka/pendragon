@@ -20,7 +20,7 @@ class Howl
 
         begin
           matched_routes = recognize(request)
-          [200, {'Content-Type' => 'text/html;charset=utf-8;'}, matched_routes]
+          [200, {}, matched_routes]
         rescue => evar
           case evar
           when NotFound then not_found
