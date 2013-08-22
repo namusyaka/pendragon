@@ -19,8 +19,6 @@ class Howl
     :server_error       => 500
   }
 
-  attr_accessor :request, :response
-
   # Generate a route, and add to routes.
   #
   # @param [String, Symbol] verb The verb decide a acceptable request method.
