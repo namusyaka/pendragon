@@ -161,6 +161,6 @@ class Howl
 
   def generate_response(key, headers = {})
     headers['Content-Type'] = 'text/html;charset=utf-8;' if headers.empty?
-    [RESPONSE_HEADERS[key], headers, [key.to_s.split('_').map(&:capitalize) * " "]]
+    [RESPONSE_HEADERS[key], headers, [key.to_s.split('_').map(&:capitalize).join(" ")]]
   end
 end
