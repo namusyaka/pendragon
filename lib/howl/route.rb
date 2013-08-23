@@ -1,5 +1,3 @@
-
-
 class Howl
   class Route
     attr_accessor :block, :capture, :router, :params, :name,

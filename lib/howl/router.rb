@@ -1,5 +1,3 @@
-
-
 class Howl
   class Router
     attr_reader :current_order, :routes, :routes_with_verbs
