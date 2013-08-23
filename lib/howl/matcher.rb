@@ -19,7 +19,6 @@ class Howl
         result
       end
       params.merge!(@default_values) if @default_values.is_a?(Hash)
-
       expanded_path = handler.expand(params)
       expanded_path = expanded_path + "?" + query.map{|k,v| "#{k}=#{v}" }.join("&") unless query.empty?
       expanded_path
