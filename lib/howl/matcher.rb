@@ -26,7 +26,7 @@ class Howl
     end
 
     def mustermann?
-      handler.class == ::Mustermann::Rails
+      handler.class == Mustermann::Rails
     end
 
     def handler
