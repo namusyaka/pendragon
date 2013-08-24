@@ -1,4 +1,4 @@
-require File.expand_path('../../lib/howl/padrino', __FILE__)
+require File.expand_path('../../lib/howl-router/padrino', __FILE__)
 $:.unshift(File.dirname(__FILE__))
 require 'helper'
 

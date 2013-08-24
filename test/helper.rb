@@ -1,7 +1,7 @@
 require 'bundler/setup'
 ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
-require File.expand_path('../../lib/howl', __FILE__)
+require File.expand_path('../../lib/howl-router', __FILE__)
 
 require 'minitest/unit'
 require 'minitest/autorun'

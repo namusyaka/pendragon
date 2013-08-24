@@ -1,13 +1,9 @@
-require File.expand_path("../../howl", __FILE__) unless defined?(Howl)
-
-%w[
-  core
-  route
-  router
-  matcher
-  ext/instance_methods
-  ext/class_methods
-].each{|name| require File.expand_path("../padrino/#{name}", __FILE__) }
+require 'howl-router/padrino/core'
+require 'howl-router/padrino/route'
+require 'howl-router/padrino/router'
+require 'howl-router/padrino/matcher'
+require 'howl-router/padrino/ext/instance_methods'
+require 'howl-router/padrino/ext/class_methods'
 
 class Howl
   module Padrino

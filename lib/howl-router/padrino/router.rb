@@ -1,4 +1,4 @@
-require File.expand_path('../../router', __FILE__)
+require 'howl-router/router'
 
 class Howl
   module Padrino

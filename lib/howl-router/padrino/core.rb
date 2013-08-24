@@ -1,3 +1,4 @@
+require 'howl-router' unless defined?(Howl)
 
 class Howl
   module Padrino

@@ -1,11 +1,8 @@
 require 'rack'
-
-%w[
-  route
-  router
-  matcher
-  request
-].each{|name| require File.expand_path("../howl/#{name}", __FILE__) }
+require 'howl-router/route'
+require 'howl-router/router'
+require 'howl-router/matcher'
+require 'howl-router/request'
 
 class Howl
   class InvalidRouteException < ArgumentError
