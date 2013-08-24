@@ -30,9 +30,11 @@ class Howl
 
     def handler
       @handler ||= case @path
-                   when String then Mustermann.new(@path, :type => :rails, :capture => @capture)
-                   when Regexp then /^(?:#{@path})$/
-                   end
+      when String
+        Mustermann.new(@path, :type => :rails, :capture => @capture, :uri_decode => nil)
+      when Regexp
+        /^(?:#{@path})$/
+      end
     end
 
     def to_s

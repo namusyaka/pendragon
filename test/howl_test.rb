@@ -33,6 +33,8 @@ describe Howl do
 
       get("/1")
       assert_equal "show 1", body
+      get(URI.escape("/あいうえお"))
+      assert_equal "show あいうえお", body
       get("/foo")
       assert_equal "show foo", body
       get("/1.json")

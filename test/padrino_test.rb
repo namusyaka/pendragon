@@ -110,6 +110,14 @@ describe "Howl::Padrino" do
     assert_equal 'success!', body    
   end
 
+  should 'parse route that contains encoded param.' do
+    mock_app do
+      get('/foo/:name'){ params[:name] }
+    end
+    get(URI.escape('/foo/あいうえお'))
+    assert_equal 'あいうえお', body
+  end
+
   should 'encode params using UTF-8' do
     #skip unless ''.respond_to?(:encoding) # for 1.8.7
 
