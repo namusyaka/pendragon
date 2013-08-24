@@ -1,6 +1,6 @@
-# Howl
+# Howl Router
 
-[![Build Status](https://travis-ci.org/namusyaka/howl.png)](https://travis-ci.org/namusyaka/howl)
+[![Build Status](https://travis-ci.org/namusyaka/howl-router.png)](https://travis-ci.org/namusyaka/howl-router)
 
 A http router for Rack and Padrino.
 
@@ -8,16 +8,16 @@ Howl works only in Ruby2.0.
 
 ## Installation
 
-`git clone git@github.com:namusyaka/howl.git`
+`git clone git@github.com:namusyaka/howl-router.git`
 
-`cd howl; bundle install`
+`cd howl-router; bundle install`
 
 ## Example
 
 Write this code to your config.ru.
 
 ```ruby
-require 'howl'
+require 'howl-router'
 
 howl = Howl.new
 howl.add(:get, "/") do
@@ -100,7 +100,7 @@ howl.path(:users, :name => "howl") #=> "/users/howl"
 If you use Howl, your application does not use http_router. 
 
 ```ruby
-require 'howl/padrino'
+require 'howl-router/padrino'
 
 class App < Padrino::Application
   register Howl::Padrino
