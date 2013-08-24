@@ -8,9 +8,13 @@ Howl works only in Ruby2.0.
 
 ## Installation
 
-`git clone git@github.com:namusyaka/howl-router.git`
+add this line to your Gemfile.
 
-`cd howl-router; bundle install`
+`gem 'howl-router'`
+
+or
+
+`$ gem install howl-router`
 
 ## Example
 
