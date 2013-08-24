@@ -98,7 +98,7 @@ class Howl
 
   # Reset a router.
   def reset!
-    @router = @compiled = nil
+    @compiled = nil
     router.reset!
   end
 
