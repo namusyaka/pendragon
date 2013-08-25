@@ -8,6 +8,7 @@ class Howl
           captured_params = params[:captures].is_a?(Array) ? params.delete(:captures) :
                                                              params.values_at(*route.matcher.names.dup)
 
+          @_response_buffer = nil
           @route = request.route_obj = route
           @params.merge!(params) if params.is_a?(Hash)
           @params.merge!(:captures => captured_params) unless captured_params.empty?
@@ -22,8 +23,9 @@ class Howl
               route.custom_conditions.each {|block|
                 pass if block.bind(self).call == false
               } unless route.custom_conditions.empty?
-              halt_response = catch(:halt){ route_eval{ route.block[self, captured_params] }}
-              successful    = true
+              halt_response     = catch(:halt){ route_eval{ route.block[self, captured_params] }}
+              @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
+              successful        = true
               halt(halt_response)
             ensure
               (route.after_filters - settings.filters[:after]).each {|block| instance_eval(&block) } if successful
