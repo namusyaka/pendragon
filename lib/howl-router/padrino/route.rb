@@ -3,7 +3,8 @@ require 'howl-router/route'
 class Howl
   module Padrino
     class Route < ::Howl::Route
-      attr_accessor :action, :cache, :parent, :use_layout, :controller, :user_agent
+      attr_accessor :action, :cache, :cache_key, :cache_expires_in,
+                    :parent, :use_layout, :controller, :user_agent
   
       def before_filters(&block)
         @_before_filters ||= []
