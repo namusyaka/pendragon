@@ -31,6 +31,10 @@ class Howl
         [verb.to_s.upcase]
       end
 
+      def original_path 
+        @path 
+      end 
+
       def significant_variable_names
         @significant_variable_names ||= if @path.is_a?(String)
           @path.scan(/(^|[^\\])[:\*]([a-zA-Z0-9_]+)/).map{|p| p.last.to_sym}
