@@ -20,9 +20,7 @@ class Howl
             begin
               (route.before_filters - settings.filters[:before]).each{|block| instance_eval(&block) }
               @layout = route.use_layout if route.use_layout
-              route.custom_conditions.each {|block|
-                pass if block.bind(self).call == false
-              } unless route.custom_conditions.empty?
+              route.custom_conditions.each {|block| pass if block.bind(self).call == false }
               halt_response     = catch(:halt){ route_eval{ route.block[self, captured_params] }}
               @_response_buffer = halt_response.is_a?(Array) ? halt_response.last : halt_response
               successful        = true
