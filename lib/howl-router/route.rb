@@ -3,7 +3,7 @@ class Howl
     attr_accessor :block, :capture, :router, :params, :name,
                   :order, :default_values, :path_for_generation, :verb
 
-    def initialize(path, options = {}, &block)
+    def initialize(path, &block)
       @path     = path
       @params   = {}
       @capture  = {}
