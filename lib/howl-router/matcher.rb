@@ -70,7 +70,7 @@ class Howl
 
     # @return [Array] Return a named captures.
     def names
-      mustermann? ? handler.names.map(&:to_sym) : []
+      handler.names.map(&:to_sym)
     end
   end
 end
