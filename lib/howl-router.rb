@@ -19,7 +19,7 @@ class Howl
   # Generate a route, and add to routes.
   #
   # @param [String, Symbol] verb The verb decide a acceptable request method.
-  # @param [String] path The path associate to route.
+  # @param [String, Regexp] path The path associate to route.
   # @option options [String] :path_for_generation Accept path_for_generation.
   # @yield The block associate to route.
   #
@@ -61,6 +61,7 @@ class Howl
   # Determines whether the compiled.
   #
   # @return [Boolean]
+  #
   def compiled?
     @compiled
   end
@@ -68,6 +69,7 @@ class Howl
   # Compile routes.
   #
   # @return [Array] Return a compiled routes.
+  #
   def compile
     @compiled = true
     router.compile
@@ -78,6 +80,7 @@ class Howl
   # @param [Rack::Request] request The request is a Rack::Request or instance that inherited it.
   #
   # @return [Array] Return a routes that match the path_info.
+  #
   def recognize(request)
     router.recognize(request)
   end
@@ -102,6 +105,7 @@ class Howl
   # Return a Router instance.
   #
   # @return [Howl::Router]
+  #
   def router
     @router ||= Router.new
   end
@@ -109,6 +113,7 @@ class Howl
   # Return a added routes.
   #
   # @return [Array]
+  #
   def routes
     router.routes
   end
