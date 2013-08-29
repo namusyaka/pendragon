@@ -21,7 +21,7 @@ class Howl
   # @param [String, Symbol] verb The verb decide a acceptable request method.
   # @param [String] path The path associate to route.
   # @option options [String] :path_for_generation Accept path_for_generation.
-  # @yield The block assosiate to route.
+  # @yield The block associate to route.
   #
   # @example
   #   howl = Howl.new
@@ -60,7 +60,7 @@ class Howl
 
   # Determines whether the compiled.
   #
-  # @return [Bool]
+  # @return [Boolean]
   def compiled?
     @compiled
   end
