@@ -89,7 +89,7 @@ class Howl
   #
   # @param [String] path_info
   #
-  # @return [Array] Return a Array that likes [name, params].
+  # @return [Array] Return an Array that likes [name, params].
   def recognize_path(path_info)
     response      = router.recognize(Rack::MockRequest.env_for(path_info))
     route, params = response.first
