@@ -11,7 +11,8 @@ class Howl
           @_response_buffer = nil
           @route = request.route_obj = route
           @params.merge!(params) if params.is_a?(Hash)
-          @params.merge!(:captures => captured_params) unless captured_params.empty?
+          #@params.merge!(:captures => captured_params) unless captured_params.empty?
+          @params.merge!(:captures => captured_params) if !captured_params.empty? && route.path.is_a?(Regexp)
           @block_params = params
 
           filter! :before if options[:first]
