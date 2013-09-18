@@ -16,6 +16,10 @@ class Howl
     :server_error       => 500
   }
 
+  def initialize(&block)
+    instance_eval(&block) if block_given?
+  end
+
   # Generate a route, and add to routes.
   #
   # @param [String, Symbol] verb The verb decide a acceptable request method.

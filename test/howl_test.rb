@@ -99,5 +99,20 @@ describe Howl do
     end
   end
 
-
+  describe "#new allows block" do
+    should "#new support for block." do
+      @app = Howl.new do
+        foo = add(:get, "/"){"foo"}
+        bar = add(:post, "/"){"bar"}
+        foo.name = :foo
+        bar.name = :bar
+      end
+      get("/")
+      assert_equal "foo", body
+      post("/")
+      assert_equal "bar", body
+      assert_equal @app.path(:foo), "/"
+      assert_equal @app.path(:bar), "/"
+    end
+  end
 end
