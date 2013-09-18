@@ -34,7 +34,7 @@ class Howl
           params[:captures] = match_data.captures
         else
           params.merge!(route.params).merge!(match_data.names.inject({}){|result, name|
-            result[name.to_sym] = match_data[name]
+            result[name.to_sym] = match_data[name] ? Rack::Utils.unescape(match_data[name]) : nil
             result
           }).merge!(request_params){|key, self_value, new_value| self_value || new_value }
         end

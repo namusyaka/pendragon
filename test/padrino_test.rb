@@ -110,6 +110,16 @@ describe "Howl::Padrino" do
     assert_equal 'success!', body    
   end
 
+  should 'parse routes that include encoded slash' do
+    mock_app do
+      get('/:drive_alias/:path', :path => /.*/){
+        "Show #{params[:drive_alias]} and #{params[:path]}"
+      }
+    end
+    get("/drive%2Ffoo/some/path")
+    assert_equal "Show drive/foo and some/path", body
+  end
+
   should 'parse route that contains encoded param.' do
     mock_app do
       get('/foo/:name'){ params[:name] }
