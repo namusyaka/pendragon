@@ -1,7 +1,7 @@
 class Howl
   class Route
-    attr_accessor :block, :capture, :router, :params, :name,
-                  :order, :default_values, :path_for_generation, :verb
+    attr_accessor :block, :capture, :router, :name,:order,
+                  :default_values, :path_for_generation, :verb
 
     # @param [String, Regexp] path The path associate to this route.
     # @yield The block associate to this route.
@@ -15,7 +15,6 @@ class Howl
     #
     def initialize(path, &block)
       @path     = path
-      @params   = {}
       @capture  = {}
       @order    = 0
       @block    = block if block_given?

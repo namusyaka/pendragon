@@ -34,10 +34,8 @@ class Howl
   # @return [Howl::Route] Return a generated Howl::Route instance.
   #
   def add(verb, path, options = {}, &block)
-    verb = verb.downcase.to_sym
-    (router.routes_with_verbs[verb] ||= []) << (route = Route.new(path, &block))
-    route.path_for_generation = options[:path_for_generation] if options[:path_for_generation]
-    route.verb = verb
+    route        = Route.new(path, &block)
+    route.verb   = verb.downcase.to_sym
     route.router = router
     router.routes << route
     route
