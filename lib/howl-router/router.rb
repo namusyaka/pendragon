@@ -7,20 +7,13 @@ class Howl
     end
 
     def recognize(request)
-      path_info, verb, request_params = if request.is_a?(Hash)
-        [request['PATH_INFO'], request['REQUEST_METHOD'].downcase.to_sym, {}]
-      else
-        [request.path_info, request.request_method.downcase.to_sym, parse_request_params(request.params)]
-      end
+      path_info, verb, request_params = parse_request(request)
       ignore_slash_path_info = path_info
       ignore_slash_path_info = path_info[0..-2] if path_info != "/" and path_info[-1] == "/"
-      matched_routes = @routes.select do |route|
-        matcher = route.matcher
-        matcher.match(matcher.mustermann? ? ignore_slash_path_info : path_info)
-      end
+      matched_routes = scan_routes(path_info, ignore_slash_path_info)
       raise NotFound if matched_routes.empty?
       raise_method_not_allowed(request, matched_routes) unless matched_routes.find{|r|r.verb == verb}
-      result = matched_routes.map{|route|
+      result = matched_routes.map do |route|
         next unless verb == route.verb
         params, matcher = {}, route.matcher
         match_data = matcher.match(matcher.mustermann? ? ignore_slash_path_info : path_info)
@@ -33,9 +26,8 @@ class Howl
           }).merge!(request_params){|key, self_value, new_value| self_value || new_value }
         end
         [route, params]
-      }.compact
-      raise_method_not_allowed(request, matched_routes) if result.empty?
-      result
+      end.compact
+      result.empty? ? raise_method_not_allowed(request, matched_routes) : result
     end
 
     def increment_order
@@ -53,6 +45,21 @@ class Howl
     end
 
     private
+
+    def scan_routes(path_info, ignore_slash_path_info)
+      @routes.select do |route|
+        matcher = route.matcher
+        matcher.match(matcher.mustermann? ? ignore_slash_path_info : path_info)
+      end
+    end
+
+    def parse_request(request)
+      if request.is_a?(Hash)
+        [request['PATH_INFO'], request['REQUEST_METHOD'].downcase.to_sym, {}]
+      else
+        [request.path_info, request.request_method.downcase.to_sym, parse_request_params(request.params)]
+      end
+    end
 
     def parse_request_params(params)
       params.inject({}) do |result, entry|
