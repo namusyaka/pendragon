@@ -84,7 +84,7 @@ describe Howl do
   describe "generate path" do
     before(:each){ @howl.reset! }
 
-    should "basic route of regexp" do
+    should "basic route" do
       index = @howl.add(:get, "/"){}
       index.name = :index
       foo_bar = @howl.add(:post, "/foo/bar"){}
@@ -96,6 +96,16 @@ describe Howl do
       assert_equal @howl.path(:foo_bar), "/foo/bar"
       assert_equal @howl.path(:users, :user_id => 1), "/users/1"
       assert_equal @howl.path(:users, :user_id => 1, :query => "string"), "/users/1?query=string"
+    end
+
+    should "regexp" do
+      index = @howl.add(:get, /.+?/){}
+      index.name = :index
+      foo_bar = @howl.add(:post, /\d+/){}
+      foo_bar.name = :foo_bar
+
+      assert_equal @howl.path(:index), /.+?/
+      assert_equal @howl.path(:foo_bar), /\d+/
     end
   end
 

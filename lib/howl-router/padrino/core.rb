@@ -28,6 +28,27 @@ class Howl
         end
       end
 
+      def path(name, *args)
+        params = args.delete_at(args.last.is_a?(Hash) ? -1 : 0) || {}
+        saved_args = args.dup
+        router.routes.each do |route|
+          next unless route.name == name
+          matcher = route.matcher
+          if !args.empty? and matcher.mustermann?
+            matcher_names = matcher.names
+            params_for_expand = Hash[matcher_names.map{|matcher_name|
+              [matcher_name.to_sym, (params[matcher_name.to_sym] || args.shift)]
+            }]
+            params_for_expand.merge!(Hash[params.select{|k, v| !matcher_names.include?(name.to_sym) }])
+            args = saved_args.dup
+          else
+            params_for_expand = params.dup
+          end
+          return matcher.mustermann? ? matcher.expand(params_for_expand) : route.path_for_generation
+        end
+        raise InvalidRouteException
+      end
+
       private
 
       def generate_response(key, headers = {})

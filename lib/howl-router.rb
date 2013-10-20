@@ -151,7 +151,7 @@ class Howl
       else
         params_for_expand = params.dup
       end
-      return matcher.mustermann? ? matcher.expand(params_for_expand) : route.path_for_generation
+      return matcher.mustermann? ? matcher.expand(params_for_expand) : route.path
     end
     raise InvalidRouteException
   end

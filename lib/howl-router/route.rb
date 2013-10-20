@@ -1,7 +1,7 @@
 class Howl
   class Route
-    attr_accessor :block, :capture, :router, :name,:order,
-                  :default_values, :path_for_generation, :verb
+    attr_accessor :block, :capture, :router, :name,
+                  :order, :default_values, :verb
 
     # @param [String, Regexp] path The path associate to this route.
     # @yield The block associate to this route.
