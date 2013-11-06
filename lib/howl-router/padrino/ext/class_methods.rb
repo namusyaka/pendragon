@@ -2,7 +2,7 @@
 class Howl
   module Padrino
     module ClassMethods
-      CONTENT_TYPE_ALIASES = { :htm => :html } unless defined?(CONTENT_TYPE_ALIASES)
+      CONTENT_TYPE_ALIASES = {:htm => :html} unless defined?(CONTENT_TYPE_ALIASES)
       ROUTE_PRIORITY       = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
 
       def router
@@ -139,6 +139,7 @@ class Howl
           mime_types = types.map {|t| mime_type(t) }.compact
           url_format = params[:format].to_sym if params[:format]
           accepts = request.accept.map {|a| a.to_str }
+          accepts = [] if accepts == ["*/*"]
 
           # per rfc2616-sec14:
           # Assume */* if no ACCEPT header is given.
