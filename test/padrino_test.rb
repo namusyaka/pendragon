@@ -448,14 +448,14 @@ describe "Howl::Padrino" do
   should "should inject the action name into the request" do
     mock_app do
       controller :posts do
-        get('/omnomnom(/:id)') { request.action.inspect }
+        get('/omnomnom(/:id)?') { request.action.inspect }
         controller :mini do
           get([:a, :b, :c]) { request.action.inspect }
         end
       end
     end
     get "/posts/omnomnom"
-    assert_equal "\"/omnomnom(/:id)\"", body
+    assert_equal "\"/omnomnom(/:id)?\"", body
     get "/mini/a/b/c"
     assert_equal ":a", body
   end
@@ -873,7 +873,7 @@ describe "Howl::Padrino" do
 
   should 'allow optionals' do
     mock_app do
-      get(:show, :map => "/stories/:type(/:category)") do
+      get(:show, :map => "/stories/:type(/:category)?") do
         "#{params[:type]}/#{params[:category]}"
       end
     end
@@ -1385,7 +1385,7 @@ describe "Howl::Padrino" do
 
   should 'works with optionals params' do
     mock_app do
-      get("/foo(/:bar)") { params[:bar] }
+      get("/foo(/:bar)?") { params[:bar] }
     end
 
     get "/foo/bar"
@@ -1488,7 +1488,7 @@ describe "Howl::Padrino" do
 
   should "use optionals params" do
     mock_app do
-      get(:index, :map => "/(:foo(/:bar))") { "#{params[:foo]}-#{params[:bar]}" }
+      get(:index, :map => "/:foo(/:bar)?") { "#{params[:foo]}-#{params[:bar]}" }
     end
     get "/foo"
     assert_equal "foo-", body

@@ -49,7 +49,7 @@ class Howl
 
     # @return [Boolean] This matcher's handler is mustermann ?
     def mustermann?
-      handler.class == Mustermann::Rails
+      handler.instance_of?(Mustermann::Sinatra)
     end
 
     # @return [Mustermann::Rails] Return a Mustermann::Rails when @path is string.
@@ -57,7 +57,7 @@ class Howl
     def handler
       @handler ||= case @path
       when String
-        Mustermann.new(@path, :type => :rails, :capture => @capture)
+        Mustermann.new(@path, :capture => @capture)
       when Regexp
         /^(?:#{@path})$/
       end

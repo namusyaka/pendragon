@@ -92,7 +92,7 @@ class Howl
         invoke_hook(:route_added, verb, path, block)
 
         # Howl route construction
-        path[0, 0] = "/" if path == "(.:format)"
+        path[0, 0] = "/" if path == "(.:format)?"
         route = router.add(verb.downcase.to_sym, path, route_options)
         route.name = name if name
         route.action = action
@@ -175,6 +175,21 @@ class Howl
 
           matched_format
         end
+      end
+
+      def process_path_for_parent_params(path, parent_params)
+        parent_prefix = parent_params.flatten.compact.uniq.map do |param|
+          map = (param.respond_to?(:map) && param.map ? param.map : param.to_s)
+          part = "#{map}/:#{param.to_s.singularize}_id/"
+          part = "(#{part})?" if param.respond_to?(:optional) && param.optional?
+          part
+        end
+
+        [parent_prefix, path].flatten.join("")
+      end
+
+      def process_path_for_provides(path, format_params)
+        path << "(.:format)?" unless path[-11, 11] == '(.:format)?'
       end
     end
   end
