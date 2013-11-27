@@ -12,8 +12,7 @@ class Howl
 
       result = matched_routes.map do |route|
         next unless verb == route.verb
-        params, matcher = {}, route.matcher
-        match_data = matcher.match(path_info)
+        params, match_data = {}, route.matcher.match(path_info)
         if match_data.names.empty?
           params[:captures] = match_data.captures
         else
@@ -50,6 +49,7 @@ class Howl
 
     def scan_routes(pattern)
       raise NotFound if (selected_routes = @routes.select{|route| route.matcher.match(pattern) }).empty?
+      selected_routes
     end
 
     def parse_request(request)
@@ -65,11 +65,6 @@ class Howl
         result[entry[0].to_sym] = entry[1]
         result
       end
-    end
-
-    def raise_method_not_allowed(request, matched_routes)
-      request.acceptable_methods = matched_routes.map(&:verb)
-      raise MethodNotAllowed
     end
   end
 end
