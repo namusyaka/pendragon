@@ -8,15 +8,12 @@ class Howl
 
     def recognize(request)
       path_info, verb, request_params = parse_request(request)
-      ignore_slash_path_info = path_info
-      ignore_slash_path_info = path_info[0..-2] if path_info != "/" and path_info[-1] == "/"
-      matched_routes = scan_routes(path_info, ignore_slash_path_info)
-      raise NotFound if matched_routes.empty?
-      raise_method_not_allowed(request, matched_routes) unless matched_routes.find{|r|r.verb == verb}
+      matched_routes = scan_routes(path_info)
+
       result = matched_routes.map do |route|
         next unless verb == route.verb
         params, matcher = {}, route.matcher
-        match_data = matcher.match(matcher.mustermann? ? ignore_slash_path_info : path_info)
+        match_data = matcher.match(path_info)
         if match_data.names.empty?
           params[:captures] = match_data.captures
         else
@@ -27,7 +24,13 @@ class Howl
         end
         [route, params]
       end.compact
-      result.empty? ? raise_method_not_allowed(request, matched_routes) : result
+
+      if result.empty?
+        request.acceptable_methods = matched_routes.map(&:verb)
+        raise MethodNotAllowed
+      else
+        result
+      end
     end
 
     def increment_order
@@ -40,17 +43,13 @@ class Howl
     end
 
     def reset!
-      @routes            = []
-      @current_order     = 0
+      @routes, @current_order = [], 0
     end
 
     private
 
-    def scan_routes(path_info, ignore_slash_path_info)
-      @routes.select do |route|
-        matcher = route.matcher
-        matcher.match(matcher.mustermann? ? ignore_slash_path_info : path_info)
-      end
+    def scan_routes(pattern)
+      raise NotFound if (selected_routes = @routes.select{|route| route.matcher.match(pattern) }).empty?
     end
 
     def parse_request(request)

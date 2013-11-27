@@ -22,6 +22,7 @@ class Howl
     # @return [Nil] If the pattern doesn't matched this route, return a nil.
     #
     def match(pattern)
+      pattern = pattern[0..-2] if mustermann? and pattern != "/" and pattern[-1] == "/"
       handler.match(pattern)
     end
 
