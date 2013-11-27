@@ -19,12 +19,8 @@ class Howl
         begin
           matched_routes = recognize(request)
           [200, {}, matched_routes]
-        rescue => evar
-          case evar
-          when NotFound then not_found
-          when MethodNotAllowed then method_not_allowed('Allow' => request.acceptable_methods.sort.join(", "))
-          else server_error
-          end
+        rescue NotFound, MethodNotAllowed
+          $!.call
         end
       end
 
@@ -47,12 +43,6 @@ class Howl
           return matcher.mustermann? ? matcher.expand(params_for_expand) : route.path_for_generation
         end
         raise InvalidRouteException
-      end
-
-      private
-
-      def generate_response(key, headers = {})
-        [RESPONSE_HEADERS[key], headers, [key.to_s.split('_').map(&:capitalize) * " "]]
       end
     end
   end

@@ -3,18 +3,22 @@ require 'howl-router/route'
 require 'howl-router/router'
 require 'howl-router/matcher'
 require 'howl-router/request'
+require 'howl-router/error-handler'
 
 class Howl
-  class InvalidRouteException < ArgumentError
+
+  # Allow these verbs.
+  HTTP_VERBS = [:get, :post, :delete, :put, :head]
+
+  # Howl#path will raise this exception if did not find correct route.
+  InvalidRouteException = Class.new(ArgumentError)
+
+  class NotFound < ErrorHandler; end
+  class MethodNotAllowed < ErrorHandler
+    set :status, 405
+    set :body, "Method not allowed"
   end
 
-  HTTP_VERBS       = [:get, :post, :delete, :put, :head]
-  RESPONSE_HEADERS = {
-    :bad_request        => 400,
-    :not_found          => 404,
-    :method_not_allowed => 405,
-    :server_error       => 500
-  }
 
   def initialize(&block)
     instance_eval(&block) if block_given?
@@ -51,12 +55,8 @@ class Howl
       route, params = matched_routes.first
       result = route.arity != 0 ? route.call(params) : route.call
       [200, {'Content-Type' => 'text/html;charset=utf-8;'}, [result]]
-    rescue => evar
-      case evar
-      when NotFound then not_found
-      when MethodNotAllowed then method_not_allowed
-      else server_error
-      end
+    rescue NotFound, MethodNotAllowed
+      $!.call
     end
   end
 
@@ -154,17 +154,5 @@ class Howl
       return matcher.mustermann? ? matcher.expand(params_for_expand) : route.path
     end
     raise InvalidRouteException
-  end
-
-  RESPONSE_HEADERS.keys.each do |method_name|
-    define_method(method_name){|headers = {}| generate_response(method_name.to_sym, headers) }
-    Object.const_set(method_name.to_s.split('_').map(&:capitalize).join, Class.new(StandardError))
-  end
-
-  private
-
-  def generate_response(key, headers = {})
-    headers['Content-Type'] = 'text/html;charset=utf-8;' if headers.empty?
-    [RESPONSE_HEADERS[key], headers, [key.to_s.split('_').map(&:capitalize).join(" ")]]
   end
 end
