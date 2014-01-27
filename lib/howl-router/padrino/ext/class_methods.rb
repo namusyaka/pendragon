@@ -1,4 +1,3 @@
-
 class Howl
   module Padrino
     module ClassMethods
