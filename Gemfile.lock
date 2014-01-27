@@ -8,9 +8,13 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (3.2.16)
+    activesupport (4.0.2)
       i18n (~> 0.6, >= 0.6.4)
-      multi_json (~> 1.0)
+      minitest (~> 4.2)
+      multi_json (~> 1.3)
+      thread_safe (~> 0.1)
+      tzinfo (~> 0.3.37)
+    atomic (1.1.14)
     haml (4.0.5)
       tilt
     http_router (0.11.0)
@@ -18,12 +22,13 @@ GEM
       url_mount (~> 0.2.1)
     i18n (0.6.9)
     metaclass (0.0.2)
+    minitest (4.7.5)
     mocha (1.0.0)
       metaclass (~> 0.0.1)
     multi_json (1.8.4)
     mustermann (0.2.0)
-    padrino-core (0.11.4)
-      activesupport (>= 3.1, < 4.0)
+    padrino-core (0.12.0.rc3)
+      activesupport (>= 3.1)
       http_router (~> 0.11.0)
       rack-protection (>= 1.5.0)
       sinatra (~> 1.4.2)
@@ -40,7 +45,10 @@ GEM
       rack-protection (~> 1.4)
       tilt (~> 1.3, >= 1.3.4)
     thor (0.17.0)
+    thread_safe (0.1.3)
+      atomic
     tilt (1.4.1)
+    tzinfo (0.3.38)
     url_mount (0.2.1)
       rack
 
@@ -51,6 +59,6 @@ DEPENDENCIES
   haml
   howl-router!
   mocha (>= 0.10.0)
-  padrino-core
+  padrino-core (= 0.12.0.rc3)
   rack-test (>= 0.5.0)
   rake (>= 0.8.7)

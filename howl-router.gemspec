@@ -16,5 +16,5 @@ Gem::Specification.new "howl-router", Howl::VERSION do |s|
   s.add_development_dependency "rack-test", ">= 0.5.0"
   s.add_development_dependency "mocha", ">= 0.10.0"
   s.add_development_dependency "haml"
-  s.add_development_dependency "padrino-core"
+  s.add_development_dependency "padrino-core", "= 0.12.0.rc3"
 end

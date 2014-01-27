@@ -22,22 +22,20 @@ class Howl
       end
 
       def url(*args)
-        params = args.extract_options!
+        params = args.extract_options! # parameters is hash at end
         names, params_array = args.partition{|a| a.is_a?(Symbol)}
-        name = names.join("_").to_sym
+        name = names[0, 2].join(" ").to_sym # route name is concatenated with underscores
         if params.is_a?(Hash)
           params[:format] = params[:format].to_s unless params[:format].nil?
           params = value_to_param(params)
         end
-        url = if params_array.empty?
-                compiled_router.path(name, params)
-              else
-                compiled_router.path(name, *(params_array << params))
-              end
-        url[0,0] = conform_uri(uri_root) if defined?(uri_root)
-        url[0,0] = conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
-        url = "/" if url.blank?
-        url
+        url =
+          if params_array.empty?
+            compiled_router.path(name, params)
+          else
+            compiled_router.path(name, *(params_array << params))
+          end
+        rebase_url(url)
       rescue Howl::InvalidRouteException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
         raise ::Padrino::Routing::UnrecognizedException.new(route_error)

@@ -361,7 +361,7 @@ describe "Howl::Padrino" do
       get("/foo"){ content_type(:json); content_type.to_s }
     end
     get "/foo"
-    assert_equal 'application/json;charset=utf-8', content_type
+    assert_equal 'application/json', content_type
     assert_equal 'json', body
   end
 
@@ -481,7 +481,7 @@ describe "Howl::Padrino" do
       end
     end
     get "/posts"
-    assert_equal "posts_index", body
+    assert_equal "posts index", body
   end
 
   should "preserve the format if you set it manually" do
@@ -683,8 +683,8 @@ describe "Howl::Padrino" do
     assert_equal "1", body
     get "/admin/show/1"
     assert_equal "show 1", body
-    assert_equal "/admin/1", @app.url(:admin_index, :id => 1)
-    assert_equal "/admin/show/1", @app.url(:admin_show, :id => 1)
+    assert_equal "/admin/1", @app.url(:admin, :index, :id => 1)
+    assert_equal "/admin/show/1", @app.url(:admin, :show, :id => 1)
     get "/foo/bar"
     assert_equal "foo_bar_index", body
   end
@@ -1874,8 +1874,8 @@ describe "Howl::Padrino" do
       get(:simple, :map => "/simple/:id") { }
       get(:with_format, :with => :id, :provides => :js) { }
     end
-    assert_equal [:foo_bar, { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
-    assert_equal [:foo_bar, { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
+    assert_equal [:"foo bar", { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
+    assert_equal [:"foo bar", { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
     assert_equal [:simple, { :id => "bar" }], @app.recognize_path(@app.url(:simple, :id => "bar"))
     assert_equal [:simple, { :id => "true" }], @app.recognize_path(@app.url(:simple, :id => true))
     assert_equal [:simple, { :id => "9" }], @app.recognize_path(@app.url(:simple, :id => 9))
