@@ -101,7 +101,7 @@ howl.path(:users, :name => "howl") #=> "/users/howl"
 
 ## with Padrino
 
-If you use Howl, your application does not use http_router. 
+If you use Howl, your application does not use http_router.
 
 ```ruby
 require 'howl-router/padrino'
