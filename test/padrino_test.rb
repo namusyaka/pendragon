@@ -103,11 +103,11 @@ describe "Howl::Padrino" do
   end
 
   should 'parse routes that are encoded' do
-    mock_app do 
+    mock_app do
       get('/щч') { 'success!' }
     end
     get(URI.escape('/щч'))
-    assert_equal 'success!', body    
+    assert_equal 'success!', body
   end
 
   should 'parse routes that include encoded slash' do
@@ -131,7 +131,7 @@ describe "Howl::Padrino" do
   should 'encode params using UTF-8' do
     #skip unless ''.respond_to?(:encoding) # for 1.8.7
 
-    mock_app do 
+    mock_app do
       get('/:foo') { params[:foo].encoding.name }
     end
     get '/bar'
@@ -1836,7 +1836,7 @@ describe "Howl::Padrino" do
     end
     get "/"
     assert_equal 404, status
-    assert_match /not found/, body
+    assert_match(/not found/, body)
   end
 
   should 'render a custom 404 page using not_found' do

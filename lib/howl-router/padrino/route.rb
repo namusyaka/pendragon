@@ -5,36 +5,36 @@ class Howl
     class Route < ::Howl::Route
       attr_accessor :action, :cache, :cache_key, :cache_expires_in, :parent,
                     :use_layout, :controller, :user_agent, :path_for_generation
-  
+
       def before_filters(&block)
         @_before_filters ||= []
         @_before_filters << block if block_given?
         @_before_filters
       end
-  
+
       def after_filters(&block)
         @_after_filters ||= []
         @_after_filters << block if block_given?
         @_after_filters
       end
-  
+
       def custom_conditions(&block)
         @_custom_conditions ||= []
         @_custom_conditions << block if block_given?
         @_custom_conditions
       end
-  
+
       def call(app, *args)
         @block.call(app, *args)
       end
-  
+
       def request_methods
         [verb.to_s.upcase]
       end
 
-      def original_path 
-        @path 
-      end 
+      def original_path
+        @path
+      end
 
       def significant_variable_names
         @significant_variable_names ||= if @path.is_a?(String)
