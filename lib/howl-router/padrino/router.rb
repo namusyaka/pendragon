@@ -1,4 +1,4 @@
-require 'howl-router' unless defined?(Howl)
+require 'howl-router' unless defined?(Howl::Router)
 
 module Howl
   module Padrino
