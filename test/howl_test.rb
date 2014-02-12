@@ -64,6 +64,24 @@ describe Howl do
       get("/foo.xml")
       assert_equal "Not Found", body
     end
+
+    should "support verb methods" do
+      @howl.get("/"){ "get" }
+      @howl.post("/"){ "post" }
+      @howl.delete("/"){ "delete" }
+      @howl.put("/"){ "put" }
+      @howl.head("/"){  }
+      get("/")
+      assert_equal "get", body
+      post("/")
+      assert_equal "post", body
+      delete("/")
+      assert_equal "delete", body
+      put("/")
+      assert_equal "put", body
+      head("/")
+      assert_equal "", body
+    end
   end
   describe "regexp routing" do
     before(:each){ @howl.reset! }
@@ -85,12 +103,9 @@ describe Howl do
     before(:each){ @howl.reset! }
 
     should "basic route" do
-      index = @howl.add(:get, "/"){}
-      index.name = :index
-      foo_bar = @howl.add(:post, "/foo/bar"){}
-      foo_bar.name = :foo_bar
-      users = @howl.add(:get, "/users/:user_id"){}
-      users.name = :users
+      index = @howl.add(:get, "/", :name => :index){}
+      foo_bar = @howl.add(:post, "/foo/bar", :name => :foo_bar){}
+      users = @howl.add(:get, "/users/:user_id", :name => :users){}
 
       assert_equal @howl.path(:index), "/"
       assert_equal @howl.path(:foo_bar), "/foo/bar"
@@ -99,10 +114,8 @@ describe Howl do
     end
 
     should "regexp" do
-      index = @howl.add(:get, /.+?/){}
-      index.name = :index
-      foo_bar = @howl.add(:post, /\d+/){}
-      foo_bar.name = :foo_bar
+      index = @howl.add(:get, /.+?/, :name => :index){}
+      foo_bar = @howl.add(:post, /\d+/, :name => :foo_bar){}
 
       assert_equal @howl.path(:index), /.+?/
       assert_equal @howl.path(:foo_bar), /\d+/
@@ -112,10 +125,8 @@ describe Howl do
   describe "#new allows block" do
     should "#new support for block." do
       @app = Howl.new do
-        foo = add(:get, "/"){"foo"}
-        bar = add(:post, "/"){"bar"}
-        foo.name = :foo
-        bar.name = :bar
+        foo = add(:get, "/", :name => :foo){"foo"}
+        bar = add(:post, "/", :name => :bar){"bar"}
       end
       get("/")
       assert_equal "foo", body

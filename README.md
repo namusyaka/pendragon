@@ -2,9 +2,11 @@
 
 [![Build Status](https://travis-ci.org/namusyaka/howl-router.png)](https://travis-ci.org/namusyaka/howl-router)
 
-A http router for Rack and Padrino.
+Provides an HTTP router for use in Rack and Padrino.
 
 Howl works only in Ruby2.0.
+
+If you want to use in Ruby1.9, you can do it by using [mustermann/1.9-support branch](https://github.com/rkh/mustermann/tree/1.9-support).
 
 ## Installation
 
@@ -28,11 +30,16 @@ howl.add(:get, "/") do
   "get"
 end
 
-howl.add(:post, "/") do
-  "post"
+howl.get("/hey") do
+  "hey"
 end
 
-howl.add(:get, "/users/:user_id") do |params|
+howl.post("/hey") do
+  "hey, postman!"
+end
+
+
+howl.get("/users/:user_id") do |params|
   params.inspect
 end
 
