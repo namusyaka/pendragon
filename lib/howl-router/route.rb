@@ -1,69 +1,51 @@
-class Howl
+module Howl
   class Route
-    attr_accessor :block, :capture, :router, :name,
-                  :order, :default_values, :verb
 
-    # @param [String, Regexp] path The path associate to this route.
-    # @yield The block associate to this route.
-    #
-    # @example
-    #
-    #   howl  = Howl.new
-    #   index = howl.add(:get "/") # returns Howl::Route
-    #   index.name = :index # Naming
-    #   index.verb = :get # Define a http verb.
-    #
-    def initialize(path, &block)
-      @path     = path
-      @capture  = {}
-      @order    = 0
-      @block    = block if block_given?
+    ##
+    # The accessors are useful to access from Howl::Router
+    attr_accessor :block, :capture, :router, :options, :verb, :order
+
+    ##
+    # Constructs a new instance of Howl::Route
+    def initialize(path, verb, options = {}, &block)
+      @block = block if block_given?
+      @path, @verb, @options = path, verb, options
+      @capture = {}
+      @order = 0
     end
 
-    # Return a matcher which is wrapper of Mustermann or Regexp.
-    #
-    # @return [Howl::Matcher]
-    #
     def matcher
       @matcher ||= Matcher.new(@path, :capture        => @capture,
-                                      :default_values => @default_values)
+                                      :default_values => options[:default_values])
     end
 
-    # Return a block's arity.
-    #
-    # @return [Fixnum]
-    #
     def arity
-      @block.arity
+      block.arity
     end
 
     def call(*args)
       @block.call(*args)
     end
 
-    # Add a block later, and this method define a priority for routing.
-    #
-    # @yield The block associate to this route later.
-    #
-    def to(&block)
-      @block = block if block_given?
-      @order = @router.current_order
-      @router.increment_order
+    def match(pattern)
+      matcher.match(pattern)
     end
 
-    # Return a set path.
-    #
-    # @param [Hash] args[0] The hash for route's params.
-    #
-    # @example
-    #
-    #   howl = Howl.new
-    #   foo  = howl.add(:get, "/foo/:id")
-    #   foo.path #=> "/foo/:id"
-    #   foo.path(:id => 1) #=> "/foo/1"
-    #
-    # @return [String] path pattern or expanded path.
-    #
+    def name
+      @options[:name]
+    end
+
+    def name=(value)
+      warn "[DEPRECATION] 'name=' is depreacted. Please use 'options[:name]=' instead"
+      @options[:name] = value
+    end
+
+    def to(&block)
+      @block = block if block_given?
+      @order = router.current
+      router.increment_order!
+    end
+
     def path(*args)
       return @path if args.empty?
       params = args[0]

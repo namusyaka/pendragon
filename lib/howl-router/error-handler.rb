@@ -1,10 +1,10 @@
-class Howl
+module Howl
   class ErrorHandler < StandardError
     def call
       response = []
-      response << (settings[:status]  || default_response[0])
+      response << (settings[:status] || default_response[0])
       response << (settings[:headers] || default_response[1])
-      response << (settings[:body]    || default_response[2])
+      response << (settings[:body] || default_response[2])
     end
 
     def settings
@@ -26,5 +26,18 @@ class Howl
     def default_response
       @default_response ||= [404, {'Content-Type' => 'text/html'}, ["Not Found"]]
     end
+  end
+
+  NotFound = Class.new(ErrorHandler)
+  InvalidRouteException = Class.new(ArgumentError)
+
+  class MethodNotAllowed < ErrorHandler
+    set :status, 405
+    set :body,   "Method Not Allowed"
+  end
+
+  class BadRequest < ErrorHandler
+    set :status, 400
+    set :body,   "Bad Request"
   end
 end

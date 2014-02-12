@@ -1,6 +1,6 @@
 require 'mustermann'
 
-class Howl
+module Howl
   class Matcher
     # @param [String] path The path is string or regexp.
     # @option options [Hash] :capture Set capture for path pattern.
@@ -9,8 +9,8 @@ class Howl
     # @return [Howl::Matcher]
     #
     def initialize(path, options = {})
-      @path           = path.is_a?(String) && path.empty? ? "/" : path
-      @capture        = options.delete(:capture)
+      @path = path.is_a?(String) && path.empty? ? "/" : path
+      @capture = options.delete(:capture)
       @default_values = options.delete(:default_values)
     end
 
@@ -26,14 +26,14 @@ class Howl
       handler.match(pattern)
     end
 
-    # Expand the path with params.
+    # Expands the path with params.
     #
     # @param [Hash] params The params for path pattern.
     #
     # @example
-    #   matcher = Howl::Matcher.new("/foo/:bar")
-    #   matcher.expand(:bar => 123) #=> "/foo/123"
-    #   matcher.expand(:bar => "bar", :baz => "test") #=> "/foo/bar?baz=test"
+    # matcher = Howl::Matcher.new("/foo/:bar")
+    # matcher.expand(:bar => 123) #=> "/foo/123"
+    # matcher.expand(:bar => "bar", :baz => "test") #=> "/foo/bar?baz=test"
     #
     # @return [String] A expaneded path.
     def expand(params)
@@ -53,8 +53,8 @@ class Howl
       handler.instance_of?(Mustermann::Sinatra)
     end
 
-    # @return [Mustermann::Rails] Return a Mustermann::Rails when @path is string.
-    # @return [Regexp] Return a regexp when @path is regexp.
+    # @return [Mustermann::Rails] Returns a Mustermann::Rails when @path is string.
+    # @return [Regexp] Returns a regexp when @path is regexp.
     def handler
       @handler ||= case @path
       when String
@@ -64,12 +64,12 @@ class Howl
       end
     end
 
-    # @return [String] Return a converted handler.
+    # @return [String] Returns a converted handler.
     def to_s
       handler.to_s
     end
 
-    # @return [Array] Return a named captures.
+    # @return [Array] Returns a named captures.
     def names
       handler.names.map(&:to_sym)
     end

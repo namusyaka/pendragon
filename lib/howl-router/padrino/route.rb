@@ -1,6 +1,6 @@
 require 'howl-router/route'
 
-class Howl
+module Howl
   module Padrino
     class Route < ::Howl::Route
       attr_accessor :action, :cache, :cache_key, :cache_expires_in, :parent,

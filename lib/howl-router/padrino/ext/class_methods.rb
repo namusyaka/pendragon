@@ -1,11 +1,11 @@
-class Howl
+module Howl
   module Padrino
     module ClassMethods
       CONTENT_TYPE_ALIASES = {:htm => :html} unless defined?(CONTENT_TYPE_ALIASES)
       ROUTE_PRIORITY       = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
 
       def router
-        @router ||= ::Howl::Padrino::Core.new
+        @router ||= ::Howl::Padrino::Router.new
         block_given? ? yield(@router) : @router
       end
 
@@ -90,8 +90,8 @@ class Howl
 
         # Howl route construction
         path[0, 0] = "/" if path == "(.:format)?"
+        route_options.merge!(:name => name) if name
         route = router.add(verb.downcase.to_sym, path, route_options)
-        route.name = name if name
         route.action = action
         priority_name = options.delete(:priority) || :normal
         priority = ROUTE_PRIORITY[priority_name] or raise("Priority #{priority_name} not recognized, try #{ROUTE_PRIORITY.keys.join(', ')}")
@@ -101,7 +101,7 @@ class Howl
         route.user_agent = options.delete(:agent) if options.key?(:agent)
         if options.key?(:default_values)
           defaults = options.delete(:default_values)
-          route.default_values = defaults if defaults
+          route.options[:default_values] = defaults if defaults
         end
         options.delete_if do |option, captures|
           if route.significant_variable_names.include?(option)

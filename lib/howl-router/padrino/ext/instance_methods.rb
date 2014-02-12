@@ -1,4 +1,4 @@
-class Howl
+module Howl
   module Padrino
     module InstanceMethods
       private
