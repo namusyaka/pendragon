@@ -4,7 +4,7 @@ module Howl
       response = []
       response << (settings[:status] || default_response[0])
       response << (settings[:headers] || default_response[1])
-      response << (settings[:body] || default_response[2])
+      response << Array(settings[:body] || default_response[2])
     end
 
     def settings
