@@ -11,7 +11,13 @@ module Howl
 
       def compiled_router
         if @deferred_routes
-          deferred_routes.each { |routes| routes.each { |(route, dest)| route.to(&dest) } }
+          deferred_routes.each do |routes|
+            routes.each do |(route, dest)|
+              route.to(&dest)
+              route.before_filters.flatten!
+              route.after_filters.flatten!
+            end
+          end
           @deferred_routes = nil
         end
         router
@@ -45,6 +51,17 @@ module Howl
       def recognize_path(path)
         responses = @router.recognize_path(path)
         [responses[0], responses[1]]
+      end
+
+      def rebase_url(url)
+        if url.start_with?('/')
+          new_url = ''
+          new_url << conform_uri(uri_root) if defined?(uri_root)
+          new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
+          new_url << url
+        else
+          url.blank? ? '/' : url
+        end
       end
 
       private
@@ -118,8 +135,8 @@ module Howl
         invoke_hook(:padrino_route_added, route, verb, path, args, options, block)
 
         # Add Application defaults
-        route.before_filters.concat(@filters[:before])
-        route.after_filters.concat(@filters[:after])
+        route.before_filters << @filters[:before]
+        route.after_filters << @filters[:after]
         if @_controller
           route.use_layout = @layout
           route.controller = Array(@_controller)[0].to_s
@@ -128,6 +145,81 @@ module Howl
         deferred_routes[priority] << [route, block]
 
         route
+      end
+
+      def parse_route(path, options, verb)
+        route_options = {}
+
+        # We need check if path is a symbol, if that it's a named route.
+        map = options.delete(:map)
+
+        # path i.e :index or :show
+        if path.kind_of?(Symbol)
+          name = path
+          path = map ? map.dup : (path == :index ? '/' : path.to_s)
+        end
+
+        # Build our controller
+        controller = Array(@_controller).map(&:to_s)
+
+        case path
+        when String # path i.e "/index" or "/show"
+          # Now we need to parse our 'with' params
+          if with_params = options.delete(:with)
+            path = process_path_for_with_params(path, with_params)
+          end
+
+          # Now we need to parse our provides
+          options.delete(:provides) if options[:provides].nil?
+
+          if @_use_format or format_params = options[:provides]
+            process_path_for_provides(path, format_params)
+            # options[:add_match_with] ||= {}
+            # options[:add_match_with][:format] = /[^\.]+/
+          end
+
+          absolute_map = map && map[0] == ?/
+
+          unless controller.empty?
+            # Now we need to add our controller path only if not mapped directly
+            if map.blank? and !absolute_map
+              controller_path = controller.join("/")
+              path.gsub!(%r{^\(/\)|/\?}, "")
+              path = File.join(controller_path, path) unless @_map
+            end
+          end
+
+          # Now we need to parse our 'parent' params and parent scope.
+          if !absolute_map and parent_params = options.delete(:parent) || @_parents
+            parent_params = (Array(@_parents) + Array(parent_params)).uniq
+            path = process_path_for_parent_params(path, parent_params)
+          end
+
+          # Add any controller level map to the front of the path.
+          path = "#{@_map}/#{path}".squeeze('/') unless absolute_map or @_map.blank?
+
+          # Small reformats
+          path.gsub!(%r{/\?$}, '(/)') # Remove index path
+          path.gsub!(%r{//$}, '/') # Remove index path
+          path[0,0] = "/" if path !~ %r{^\(?/} # Paths must start with a /
+          path.sub!(%r{/(\))?$}, '\\1') if path != "/" # Remove latest trailing delimiter
+          path.gsub!(/\/(\(\.|$)/, '\\1') # Remove trailing slashes
+          path.squeeze!('/')
+        when Regexp
+          route_options[:path_for_generation] = options.delete(:generate_with) if options.key?(:generate_with)
+        end
+
+        name = options.delete(:route_name) if name.nil? && options.key?(:route_name)
+        name = options.delete(:name) if name.nil? && options.key?(:name)
+        if name
+          controller_name = controller.join("_")
+          name = "#{controller_name} #{name}".to_sym unless controller_name.blank?
+        end
+
+        # Merge in option defaults.
+        options.reverse_merge!(:default_values => @_defaults)
+
+        [path, name, parent_params, options, route_options]
       end
 
       def provides(*types)
@@ -187,6 +279,27 @@ module Howl
 
       def process_path_for_provides(path, format_params)
         path << "(.:format)?" unless path[-11, 11] == '(.:format)?'
+      end
+    end
+  end
+end
+
+if defined?(Padrino) && Padrino::VERSION < '0.12.0'
+  module Padrino
+    class Filter
+      def apply?(request)
+        detect = @args.any? do |arg|
+          case arg
+          when Symbol then request.route_obj && (request.route_obj.name == arg or request.route_obj.name == [@scoped_controller, arg].flatten.join(" ").to_sym)
+          else arg === request.path_info
+          end
+        end || @options.any? do |name, val|
+          case name
+          when :agent then val === request.user_agent
+          else val === request.send(name)
+          end
+        end
+        detect ^ !@mode
       end
     end
   end
