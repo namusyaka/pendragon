@@ -18,6 +18,22 @@ or
 
 `$ gem install howl-router`
 
+## Configuration
+
+If you enable compiler, performance will be improved at the expense of some features as below.
+
+* Route priority will not work (Might support in the future).
+* Duplicated routes will not work correctly.
+* MethodNotAllowed will not work.
+
+This implementation was inspired by [https://github.com/r7kamura/rack-multiplexer](rack-multiplexer).
+
+```ruby
+Howl.configure do |config|
+  config.enable_compiler = true # default value is false
+end
+```
+
 ## Example
 
 Write this code to your config.ru.
