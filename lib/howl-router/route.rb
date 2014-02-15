@@ -6,6 +6,10 @@ module Howl
     attr_accessor :block, :capture, :router, :options, :verb, :order
 
     ##
+    # For compile option
+    attr_accessor :index
+
+    ##
     # Constructs a new instance of Howl::Route
     def initialize(path, verb, options = {}, &block)
       @block = block if block_given?

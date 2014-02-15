@@ -1,15 +1,16 @@
 require 'howl-router/route'
 require 'howl-router/matcher'
-require 'howl-router/error-handler'
+require 'howl-router/error_handler'
+require 'howl-router/compile_helpers'
+require 'howl-router/configuration'
 require 'rack'
 
 module Howl
   class Router
-    ##
+
     # The accessors are useful to access from Howl::Route
     attr_accessor :current, :routes
 
-    ##
     # Constructs a new instance of Howl::Router
     # Possible to pass the block
     #
@@ -28,7 +29,6 @@ module Howl
       instance_eval(&block) if block_given?
     end
 
-    ##
     # Finds the routes if request method is valid
     # @return the Rack style response
     def call(env)
@@ -42,7 +42,6 @@ module Howl
       $!.call
     end
 
-    ##
     # Provides some methods intuitive than #add
     # Basic usage is the same as #add
     # @see Howl::Router#add
@@ -52,7 +51,6 @@ module Howl
     def put(path, options = {}, &block);    add :put,    path, options, &block end
     def head(path, options = {}, &block);   add :head,   path, options, &block end
 
-    ##
     # Adds a new route to router
     # @return [Howl::Route]
     def add(verb, path, options = {}, &block)
@@ -61,41 +59,43 @@ module Howl
       route
     end
 
-    ##
     # Resets the router's instance variables
     def reset!
-      @prepared = nil
       @routes = []
       @current = 0
+      @prepared = nil
     end
 
-    ##
     # Prepares the router for route's priority
     # This method is executed only once in the initial load
     def prepare!
       @prepared = true
-      return if current.zero?
-      routes.sort_by!(&:order)
+      @routes.sort_by!(&:order) unless current.zero?
+      if Howl.configuration.enable_compiler?
+        class << self
+          include CompileHelpers
+          alias_method :old_recognize, :recognize
+          alias_method :recognize, :recognize_by_compiling_regexp
+        end
+        compile!
+      end
     end
 
-    ##
     # @return [Boolean] the router is already prepared?
     def prepared?
       !!@prepared
     end
 
-    ##
     # Increments for the integrity of priorities
     def increment_order!
       @current += 1
     end
 
-    ##
     # Recognizes the route by request
     # @param request [Rack::Request]
     # @return [Array]
     def recognize(request)
-      path_info, verb, request_params  = parse_request(request)
+      path_info, verb, request_params = parse_request(request)
       scan(path_info, verb) do |route|
         params, match_data = {}, route.match(path_info)
         if match_data.names.empty?
@@ -110,7 +110,6 @@ module Howl
       end
     end
 
-    ##
     # Recognizes a given path
     # @param path_info [String]
     # @return [Array]
@@ -119,7 +118,6 @@ module Howl
       [route.options[:name], params]
     end
 
-    ##
     # Returns a expanded path matched with the conditions as arguments
     # @return [String, Regexp]
     # @example
