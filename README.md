@@ -26,7 +26,7 @@ If you enable compiler, performance will be improved at the expense of some feat
 * Duplicated routes will not work correctly.
 * MethodNotAllowed will not work.
 
-This implementation was inspired by [https://github.com/r7kamura/rack-multiplexer](rack-multiplexer).
+This implementation was inspired by [rack-multiplexer](https://github.com/r7kamura/rack-multiplexer).
 
 ```ruby
 Howl.configure do |config|
