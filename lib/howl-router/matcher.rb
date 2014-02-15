@@ -53,15 +53,16 @@ module Howl
       handler.instance_of?(Mustermann::Sinatra)
     end
 
-    # @return [Mustermann::Rails] Returns a Mustermann::Rails when @path is string.
+    # @return [Mustermann::Sinatra] Returns a Mustermann::Sinatra when @path is string.
     # @return [Regexp] Returns a regexp when @path is regexp.
     def handler
-      @handler ||= case @path
-      when String
-        Mustermann.new(@path, :capture => @capture)
-      when Regexp
-        /^(?:#{@path})$/
-      end
+      @handler ||=
+        case @path
+        when String
+          Mustermann.new(@path, :capture => @capture)
+        when Regexp
+          /^(?:#{@path})$/
+        end
     end
 
     # @return [String] Returns a converted handler.
