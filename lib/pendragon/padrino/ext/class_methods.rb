@@ -1,11 +1,11 @@
-module Howl
+module Pendragon
   module Padrino
     module ClassMethods
       CONTENT_TYPE_ALIASES = {:htm => :html} unless defined?(CONTENT_TYPE_ALIASES)
       ROUTE_PRIORITY       = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
 
       def router
-        @router ||= ::Howl::Padrino::Router.new
+        @router ||= ::Pendragon::Padrino::Router.new
         block_given? ? yield(@router) : @router
       end
 
@@ -42,7 +42,7 @@ module Howl
             compiled_router.path(name, *(params_array << params))
           end
         rebase_url(url)
-      rescue Howl::InvalidRouteException
+      rescue Pendragon::InvalidRouteException
         route_error = "route mapping for url(#{name.inspect}) could not be found!"
         raise ::Padrino::Routing::UnrecognizedException.new(route_error)
       end
@@ -105,7 +105,7 @@ module Howl
 
         invoke_hook(:route_added, verb, path, block)
 
-        # Howl route construction
+        # Pendragon route construction
         path[0, 0] = "/" if path == "(.:format)?"
         route_options.merge!(:name => name) if name
         route = router.add(verb.downcase.to_sym, path, route_options)

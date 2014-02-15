@@ -1,13 +1,13 @@
-module Howl
+module Pendragon
   class Configuration
 
     # Enables to compile the routes
     # Improve the performance by using this option,
     # but some features will not work correctly.
-    # @see Howl::Router#compile
+    # @see Pendragon::Router#compile
     attr_accessor :enable_compiler
 
-    # Constructs an instance of Howl::Configuration
+    # Constructs an instance of Pendragon::Configuration
     def initialize
       @enable_compiler = false
     end

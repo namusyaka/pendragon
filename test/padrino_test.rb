@@ -1,13 +1,13 @@
-require File.expand_path('../../lib/howl-router/padrino', __FILE__)
+require File.expand_path('../../lib/pendragon/padrino', __FILE__)
 $:.unshift(File.dirname(__FILE__))
 require 'helper'
 
 class FooError < RuntimeError; end
 
-describe "Howl::Padrino" do
+describe "Pendragon::Padrino" do
   setup do
     Padrino::Application.send(:register, Padrino::Rendering)
-    Padrino::Application.send(:register, Howl::Padrino)
+    Padrino::Application.send(:register, Pendragon::Padrino)
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
   end
 
@@ -292,7 +292,7 @@ describe "Howl::Padrino" do
     mock_app do
     end
 
-    assert_equal @app.method(:url).owner, Howl::Padrino::ClassMethods
+    assert_equal @app.method(:url).owner, Pendragon::Padrino::ClassMethods
   end
 
   should 'work correctly with sinatra redirects' do

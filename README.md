@@ -1,10 +1,10 @@
-# Howl Router
+# Pendragon
 
-[![Build Status](https://travis-ci.org/namusyaka/howl-router.png)](https://travis-ci.org/namusyaka/howl-router)
+[![Build Status](https://travis-ci.org/namusyaka/pendragon.png)](https://travis-ci.org/namusyaka/pendragon)
 
 Provides an HTTP router for use in Rack and Padrino.
 
-Howl works only in Ruby2.0.
+Pendragon works only in Ruby2.0.
 
 If you want to use in Ruby1.9, you can do it by using [mustermann/1.9-support branch](https://github.com/rkh/mustermann/tree/1.9-support).
 
@@ -12,11 +12,11 @@ If you want to use in Ruby1.9, you can do it by using [mustermann/1.9-support br
 
 add this line to your Gemfile.
 
-`gem 'howl-router'`
+`gem 'pendragon'`
 
 or
 
-`$ gem install howl-router`
+`$ gem install pendragon`
 
 ## Configuration
 
@@ -29,7 +29,7 @@ If you enable compiler, performance will be improved at the expense of some feat
 This implementation was inspired by [rack-multiplexer](https://github.com/r7kamura/rack-multiplexer).
 
 ```ruby
-Howl.configure do |config|
+Pendragon.configure do |config|
   config.enable_compiler = true # default value is false
 end
 ```
@@ -39,27 +39,27 @@ end
 Write this code to your config.ru.
 
 ```ruby
-require 'howl-router'
+require 'pendragon'
 
-howl = Howl.new
-howl.add(:get, "/") do
+pendragon = Pendragon.new
+pendragon.add(:get, "/") do
   "get"
 end
 
-howl.get("/hey") do
+pendragon.get("/hey") do
   "hey"
 end
 
-howl.post("/hey") do
+pendragon.post("/hey") do
   "hey, postman!"
 end
 
 
-howl.get("/users/:user_id") do |params|
+pendragon.get("/users/:user_id") do |params|
   params.inspect
 end
 
-run howl
+run pendragon
 ```
 
 ## Normal path
@@ -67,9 +67,9 @@ run howl
 ### Base
 
 ```ruby
-howl = Howl.new
+pendragon = Pendragon.new
 
-howl.add(:get, "/") do
+pendragon.add(:get, "/") do
   "hello"
 end
 ```
@@ -77,9 +77,9 @@ end
 ### Regexp
 
 ```ruby
-howl = Howl.new
+pendragon = Pendragon.new
 
-howl.add(:get, /(\d+)/) do
+pendragon.add(:get, /(\d+)/) do
   "hello"
 end
 ```
@@ -87,13 +87,13 @@ end
 ### Params
 
 ```ruby
-howl = Howl.new
+pendragon = Pendragon.new
 
-howl.add(:get, "/users/:name") do |params|
+pendragon.add(:get, "/users/:name") do |params|
   "hello #{params[:name]}"
 end
 
-howl.add(:get, /\/page\/(.+?)/) do |params|
+pendragon.add(:get, /\/page\/(.+?)/) do |params|
   "show #{params[:captures]}"
 end
 ```
@@ -101,9 +101,9 @@ end
 ### Captures
 
 ```ruby
-howl = Howl.new
+pendragon = Pendragon.new
 
-users = howl.add(:get, "/users/:name") do |params|
+users = pendragon.add(:get, "/users/:name") do |params|
   "hello #{params[:name]}"
 end
 users.captures[:name] = /\d+/
@@ -112,28 +112,28 @@ users.captures[:name] = /\d+/
 ### Name and Path
 
 ```ruby
-howl = Howl.new
+pendragon = Pendragon.new
 
-users = howl.add(:get, "/users/:name") do |params|
+users = pendragon.add(:get, "/users/:name") do |params|
   "hello #{params[:name]}"
 end
 users.name = :users
 
-howl.path(:users, :name => "howl") #=> "/users/howl"
+pendragon.path(:users, :name => "howl") #=> "/users/howl"
 ```
 
 ## with Padrino
 
-If you use Howl, your application does not use http_router.
+If you use Pendragon, your application does not use http_router.
 
 ```ruby
-require 'howl-router/padrino'
+require 'pendragon/padrino'
 
 class App < Padrino::Application
-  register Howl::Padrino
+  register Pendragon::Padrino
 
   get :index do
-    "hello howl!"
+    "hello pendragon!"
   end
 
   get :users, :map => "/users/:user_id/", :user_id => /\d+/ do |user_id|

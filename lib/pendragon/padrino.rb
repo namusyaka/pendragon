@@ -1,9 +1,9 @@
-require 'howl-router/padrino/router'
-require 'howl-router/padrino/route'
-require 'howl-router/padrino/ext/instance_methods'
-require 'howl-router/padrino/ext/class_methods'
+require 'pendragon/padrino/router'
+require 'pendragon/padrino/route'
+require 'pendragon/padrino/ext/instance_methods'
+require 'pendragon/padrino/ext/class_methods'
 
-module Howl
+module Pendragon
   module Padrino
     class << self
       def registered(app)

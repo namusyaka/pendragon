@@ -1,27 +1,27 @@
-require 'howl-router/route'
-require 'howl-router/matcher'
-require 'howl-router/error_handler'
-require 'howl-router/compile_helpers'
-require 'howl-router/configuration'
+require 'pendragon/route'
+require 'pendragon/matcher'
+require 'pendragon/error_handler'
+require 'pendragon/compile_helpers'
+require 'pendragon/configuration'
 require 'rack'
 
-module Howl
+module Pendragon
   class Router
 
-    # The accessors are useful to access from Howl::Route
+    # The accessors are useful to access from Pendragon::Route
     attr_accessor :current, :routes
 
-    # Constructs a new instance of Howl::Router
+    # Constructs a new instance of Pendragon::Router
     # Possible to pass the block
     #
     # @example with a block
-    #   app = Howl::Router.new do
+    #   app = Pendragon::Router.new do
     #     get("/"){ "hello!" }
     #     post("/"){ "hello post!" }
     #   end
     #
     # @example with base style
-    #   app = Howl::Router.new
+    #   app = Pendragon::Router.new
     #   app.get("/"){ "hello!" }
     #   app.post("/"){ "hello post!" }
     def initialize(&block)
@@ -44,7 +44,7 @@ module Howl
 
     # Provides some methods intuitive than #add
     # Basic usage is the same as #add
-    # @see Howl::Router#add
+    # @see Pendragon::Router#add
     def get(path, options = {}, &block);    add :get,    path, options, &block end
     def post(path, options = {}, &block);   add :post,   path, options, &block end
     def delete(path, options = {}, &block); add :delete, path, options, &block end
@@ -52,7 +52,7 @@ module Howl
     def head(path, options = {}, &block);   add :head,   path, options, &block end
 
     # Adds a new route to router
-    # @return [Howl::Route]
+    # @return [Pendragon::Route]
     def add(verb, path, options = {}, &block)
       routes << (route = Route.new(path, verb, options, &block))
       route.router = self
@@ -71,7 +71,7 @@ module Howl
     def prepare!
       @prepared = true
       @routes.sort_by!(&:order) unless current.zero?
-      if Howl.configuration.enable_compiler?
+      if Pendragon.configuration.enable_compiler?
         class << self
           include CompileHelpers
           alias_method :old_recognize, :recognize
@@ -121,7 +121,7 @@ module Howl
     # Returns a expanded path matched with the conditions as arguments
     # @return [String, Regexp]
     # @example
-    #   router = Howl.new
+    #   router = Pendragon.new
     #   index = router.get("/:id", :name => :index){}
     #   router.path(:index, :id => 1) #=> "/1"
     #   router.path(:index, :id => 2, :foo => "bar") #=> "/1?foo=bar"
@@ -149,7 +149,7 @@ module Howl
 
     # @!visibility private
     def valid_verb?(verb)
-      Howl::HTTP_VERBS.include?(verb.downcase.to_sym)
+      Pendragon::HTTP_VERBS.include?(verb.downcase.to_sym)
     end
 
     # @!visibility private

@@ -1,11 +1,11 @@
-require File.expand_path("../lib/howl-router/version", __FILE__)
+require File.expand_path("../lib/pendragon/version", __FILE__)
 
-Gem::Specification.new "howl-router", Howl::VERSION do |s|
-  s.description = "A http router for Rack and Padrino."
-  s.summary = "http router library."
+Gem::Specification.new "pendragon", Pendragon::VERSION do |s|
+  s.description = "Provides an HTTP router for use in Rack and Padrino."
+  s.summary = s.description
   s.authors = ["namusyaka"]
   s.email = "namusyaka@gmail.com"
-  s.homepage = "https://github.com/namusyaka/howl-router"
+  s.homepage = "https://github.com/namusyaka/pendragon"
   s.files = `git ls-files`.split("\n") - %w(.gitignore)
   s.test_files = s.files.select { |path| path =~ /^test\/.*_test\.rb/ }
   s.license = "MIT"

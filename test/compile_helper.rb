@@ -1,5 +1,5 @@
-require 'howl-router'
+require 'pendragon'
 
-Howl.configure do |config|
+Pendragon.configure do |config|
   config.enable_compiler = true
 end

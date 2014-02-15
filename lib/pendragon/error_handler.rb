@@ -1,4 +1,4 @@
-module Howl
+module Pendragon
   class ErrorHandler < StandardError
     def call
       response = []

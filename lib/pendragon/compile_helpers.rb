@@ -1,8 +1,8 @@
 
-module Howl
+module Pendragon
   module CompileHelpers
     def compile!
-      @compiled_regexps = Howl::HTTP_VERBS.inject({}){|all, verb| all[verb] = []; all }
+      @compiled_regexps = Pendragon::HTTP_VERBS.inject({}){|all, verb| all[verb] = []; all }
       @routes.each_with_index do |route, index|
         regexp = route.matcher.handler
         regexp = regexp.to_regexp if route.matcher.mustermann?

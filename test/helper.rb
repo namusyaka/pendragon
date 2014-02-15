@@ -1,7 +1,7 @@
 require 'bundler/setup'
 ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
-require File.expand_path('../../lib/howl-router', __FILE__)
+require File.expand_path('../../lib/pendragon', __FILE__)
 
 require 'minitest/unit'
 require 'minitest/autorun'
@@ -22,12 +22,12 @@ end
 class MiniTest::Spec
   include Rack::Test::Methods
 
-  def howl
-    @app = Howl.new
+  def pendragon
+    @app = Pendragon.new
   end
 
   def enable_compiler?
-    Howl.configuration.enable_compiler?
+    Pendragon.configuration.enable_compiler?
   end
 
   def mock_app(base = nil, &block)

@@ -1,4 +1,4 @@
-module Howl
+module Pendragon
   module Padrino
     module InstanceMethods
       private
@@ -38,9 +38,9 @@ module Howl
 
         status(code)
         if code == 200
-          routes.each_with_index do |(route, howl_params), index|
+          routes.each_with_index do |(route, pendragon_params), index|
             next if route.user_agent && !(route.user_agent =~ @request.user_agent)
-            invoke_route(route, howl_params, :first => index.zero?)
+            invoke_route(route, pendragon_params, :first => index.zero?)
           end
         else
           route_eval do

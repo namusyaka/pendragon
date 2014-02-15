@@ -1,12 +1,12 @@
 require 'mustermann'
 
-module Howl
+module Pendragon
   class Matcher
     # @param [String] path The path is string or regexp.
     # @option options [Hash] :capture Set capture for path pattern.
     # @option options [Hash] :default_values Set default_values for path pattern.
     #
-    # @return [Howl::Matcher]
+    # @return [Pendragon::Matcher]
     #
     def initialize(path, options = {})
       @path = path.is_a?(String) && path.empty? ? "/" : path
@@ -31,7 +31,7 @@ module Howl
     # @param [Hash] params The params for path pattern.
     #
     # @example
-    # matcher = Howl::Matcher.new("/foo/:bar")
+    # matcher = Pendragon::Matcher.new("/foo/:bar")
     # matcher.expand(:bar => 123) #=> "/foo/123"
     # matcher.expand(:bar => "bar", :baz => "test") #=> "/foo/bar?baz=test"
     #

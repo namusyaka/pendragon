@@ -1,6 +1,6 @@
 require 'rake'
 require 'rake/testtask'
-require 'howl-router'
+require 'pendragon'
 
 Rake::TestTask.new(:test_without_compiler) do |test|
   test.libs << 'test'

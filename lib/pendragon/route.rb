@@ -1,8 +1,8 @@
-module Howl
+module Pendragon
   class Route
 
     ##
-    # The accessors are useful to access from Howl::Router
+    # The accessors are useful to access from Pendragon::Router
     attr_accessor :block, :capture, :router, :options, :verb, :order
 
     ##
@@ -10,7 +10,7 @@ module Howl
     attr_accessor :index
 
     ##
-    # Constructs a new instance of Howl::Route
+    # Constructs a new instance of Pendragon::Route
     def initialize(path, verb, options = {}, &block)
       @block = block if block_given?
       @path, @verb, @options = path, verb, options

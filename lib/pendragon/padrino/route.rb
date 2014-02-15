@@ -1,8 +1,8 @@
-require 'howl-router/route'
+require 'pendragon/route'
 
-module Howl
+module Pendragon
   module Padrino
-    class Route < ::Howl::Route
+    class Route < ::Pendragon::Route
       attr_accessor :action, :cache, :cache_key, :cache_expires_in, :parent,
                     :use_layout, :controller, :user_agent, :path_for_generation
 

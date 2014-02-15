@@ -1,9 +1,9 @@
-load  File.expand_path('../lib/howl-router.rb', __FILE__)
+load  File.expand_path('../lib/pendragon.rb', __FILE__)
 
-howl = Howl.new
+pendragon = Pendragon.new
 
-howl.add(:get, "/") do
+pendragon.add(:get, "/") do
   "hello world !"
 end
 
-run howl
+run pendragon

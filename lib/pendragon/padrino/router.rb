@@ -1,8 +1,8 @@
-require 'howl-router' unless defined?(Howl::Router)
+require 'pendragon' unless defined?(Pendragon::Router)
 
-module Howl
+module Pendragon
   module Padrino
-    class Router < Howl::Router
+    class Router < Pendragon::Router
       def add(verb, path, options = {}, &block)
         route = Route.new(path, verb, options, &block)
         route.path_for_generation = options[:path_for_generation] if options[:path_for_generation]

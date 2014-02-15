@@ -1,16 +1,16 @@
-require File.expand_path('../../lib/howl-router', __FILE__)
+require File.expand_path('../../lib/pendragon', __FILE__)
 $:.unshift(File.dirname(__FILE__))
 require 'helper'
 
-describe Howl do
-  setup{ @howl = howl }
+describe Pendragon do
+  setup{ @pendragon = pendragon }
 
   describe "normal routing" do
-    before(:each){ @howl.reset! }
+    before(:each){ @pendragon.reset! }
 
     should "basic route" do
-      @howl.add(:get, "/"){ "index" }
-      @howl.add(:get, "/users"){ "users" }
+      @pendragon.add(:get, "/"){ "index" }
+      @pendragon.add(:get, "/users"){ "users" }
       get("/")
       assert_equal "index", body
       get("/users")
@@ -18,8 +18,8 @@ describe Howl do
     end
 
     should "ignore trailing delimiters for basic route" do
-      @howl.add(:get, "/"){ "index" }
-      @howl.add(:get, "/users"){ "users" }
+      @pendragon.add(:get, "/"){ "index" }
+      @pendragon.add(:get, "/users"){ "users" }
 
       get("")
       assert_equal "index", body
@@ -28,8 +28,8 @@ describe Howl do
     end
 
     should "use pattern" do
-      @howl.add(:get, "/:id"){|params| "show #{params[:id]}" }
-      @howl.add(:get, "/:id.:ext"){|params| "show #{params[:id]}.#{params[:ext]}" }
+      @pendragon.add(:get, "/:id"){|params| "show #{params[:id]}" }
+      @pendragon.add(:get, "/:id.:ext"){|params| "show #{params[:id]}.#{params[:ext]}" }
 
       get("/1")
       assert_equal "show 1", body
@@ -44,10 +44,10 @@ describe Howl do
     end
 
     should "use capture" do
-      id_route = @howl.add(:get, "/:id"){|params| "show #{params[:id]}" }
+      id_route = @pendragon.add(:get, "/:id"){|params| "show #{params[:id]}" }
       id_route.capture[:id] = /\d+/
 
-      id_with_ext_route = @howl.add(:get, "/:id.:ext"){|params| "show #{params[:id]}.#{params[:ext]}" }
+      id_with_ext_route = @pendragon.add(:get, "/:id.:ext"){|params| "show #{params[:id]}.#{params[:ext]}" }
       id_with_ext_route.capture[:id]  = /(foo|bar)/
       id_with_ext_route.capture[:ext] = %w[html json]
 
@@ -66,11 +66,11 @@ describe Howl do
     end
 
     should "support verb methods" do
-      @howl.get("/"){ "get" }
-      @howl.post("/"){ "post" }
-      @howl.delete("/"){ "delete" }
-      @howl.put("/"){ "put" }
-      @howl.head("/"){  }
+      @pendragon.get("/"){ "get" }
+      @pendragon.post("/"){ "post" }
+      @pendragon.delete("/"){ "delete" }
+      @pendragon.put("/"){ "put" }
+      @pendragon.head("/"){  }
       get("/")
       assert_equal "get", body
       post("/")
@@ -84,11 +84,11 @@ describe Howl do
     end
   end
   describe "regexp routing" do
-    before(:each){ @howl.reset! }
+    before(:each){ @pendragon.reset! }
 
     should "basic route of regexp" do
-      @howl.add(:get, /\/(\d+)/){|params| params[:captures].join(",") }
-      @howl.add(:get, /\/(foo|bar)(baz)?/){|params| params[:captures].compact.join(",") }
+      @pendragon.add(:get, /\/(\d+)/){|params| params[:captures].join(",") }
+      @pendragon.add(:get, /\/(foo|bar)(baz)?/){|params| params[:captures].compact.join(",") }
 
       get("/123")
       assert_equal "123", body
@@ -100,31 +100,31 @@ describe Howl do
   end
 
   describe "generate path" do
-    before(:each){ @howl.reset! }
+    before(:each){ @pendragon.reset! }
 
     should "basic route" do
-      index = @howl.add(:get, "/", :name => :index){}
-      foo_bar = @howl.add(:post, "/foo/bar", :name => :foo_bar){}
-      users = @howl.add(:get, "/users/:user_id", :name => :users){}
+      index = @pendragon.add(:get, "/", :name => :index){}
+      foo_bar = @pendragon.add(:post, "/foo/bar", :name => :foo_bar){}
+      users = @pendragon.add(:get, "/users/:user_id", :name => :users){}
 
-      assert_equal @howl.path(:index), "/"
-      assert_equal @howl.path(:foo_bar), "/foo/bar"
-      assert_equal @howl.path(:users, :user_id => 1), "/users/1"
-      assert_equal @howl.path(:users, :user_id => 1, :query => "string"), "/users/1?query=string"
+      assert_equal @pendragon.path(:index), "/"
+      assert_equal @pendragon.path(:foo_bar), "/foo/bar"
+      assert_equal @pendragon.path(:users, :user_id => 1), "/users/1"
+      assert_equal @pendragon.path(:users, :user_id => 1, :query => "string"), "/users/1?query=string"
     end
 
     should "regexp" do
-      index = @howl.add(:get, /.+?/, :name => :index){}
-      foo_bar = @howl.add(:post, /\d+/, :name => :foo_bar){}
+      index = @pendragon.add(:get, /.+?/, :name => :index){}
+      foo_bar = @pendragon.add(:post, /\d+/, :name => :foo_bar){}
 
-      assert_equal @howl.path(:index), /.+?/
-      assert_equal @howl.path(:foo_bar), /\d+/
+      assert_equal @pendragon.path(:index), /.+?/
+      assert_equal @pendragon.path(:foo_bar), /\d+/
     end
   end
 
   describe "#new allows block" do
     should "#new support for block." do
-      @app = Howl.new do
+      @app = Pendragon.new do
         foo = add(:get, "/", :name => :foo){"foo"}
         bar = add(:post, "/", :name => :bar){"bar"}
       end
