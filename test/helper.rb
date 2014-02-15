@@ -26,6 +26,10 @@ class MiniTest::Spec
     @app = Howl.new
   end
 
+  def enable_compiler?
+    Howl.configuration.enable_compiler?
+  end
+
   def mock_app(base = nil, &block)
     @app = Sinatra.new(base || ::Padrino::Application, &block)
   end
