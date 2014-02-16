@@ -117,8 +117,7 @@ module Pendragon
     #   router.path(:index, :id => 1) #=> "/1"
     #   router.path(:index, :id => 2, :foo => "bar") #=> "/1?foo=bar"
     def path(name, *args)
-      expanded_path = extract_with_name(name, *args) do |route, params|
-        matcher = route.matcher
+      extract_with_name(name, *args) do |route, params, matcher|
         matcher.mustermann? ? matcher.expand(params) : route.path
       end
     end
@@ -139,11 +138,8 @@ module Pendragon
         yield route
       end.compact
 
-      if result.empty?
-        raise MethodNotAllowed.new(selected_routes.map(&:verb))
-      else
-        result
-      end
+      raise MethodNotAllowed.new(selected_routes.map(&:verb)) if result.empty?
+      result
     end
 
     # @!visibility private
@@ -197,7 +193,7 @@ module Pendragon
         else
           params_for_expand = params.dup
         end
-        return yield(route, params_for_expand)
+        return yield(route, params_for_expand, matcher)
       end
       raise InvalidRouteException
     end
