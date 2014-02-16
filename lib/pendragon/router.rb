@@ -117,23 +117,10 @@ module Pendragon
     #   router.path(:index, :id => 1) #=> "/1"
     #   router.path(:index, :id => 2, :foo => "bar") #=> "/1?foo=bar"
     def path(name, *args)
-      params = args.delete_at(args.last.is_a?(Hash) ? -1 : 0) || {}
-      saved_args = args.dup
-      @routes.each do |route|
-        next unless route.options[:name] == name
+      expanded_path = extract_with_name(name, *args) do |route, params|
         matcher = route.matcher
-        if !args.empty? and matcher.mustermann?
-          matcher_names = matcher.names
-          params_for_expand = Hash[matcher_names.map{|matcher_name|
-            [matcher_name.to_sym, (params[matcher_name.to_sym] || args.shift)]}]
-          params_for_expand.merge!(Hash[params.select{|k, v| !matcher_names.include?(name.to_sym) }])
-          args = saved_args.dup
-        else
-          params_for_expand = params.dup
-        end
-        return matcher.mustermann? ? matcher.expand(params_for_expand) : route.path
+        matcher.mustermann? ? matcher.expand(params) : route.path
       end
-      raise InvalidRouteException
     end
 
     private
@@ -188,6 +175,31 @@ module Pendragon
         }).merge!(default_params){|key, self_val, new_val| self_val || new_val }
       end
       params
+    end
+
+    # @!visibility private
+    # @example
+    #   extract_with_name(:index) do |route, params|
+    #     route.matcher.mustermann? ? route.matcher.expand(params) : route.path
+    #   end
+    def extract_with_name(name, *args)
+      params = args.delete_at(args.last.is_a?(Hash) ? -1 : 0) || {}
+      saved_args = args.dup
+      @routes.each do |route|
+        next unless route.options[:name] == name
+        matcher = route.matcher
+        if !args.empty? and matcher.mustermann?
+          matcher_names = matcher.names
+          params_for_expand = Hash[matcher_names.map{|matcher_name|
+            [matcher_name.to_sym, (params[matcher_name.to_sym] || args.shift)]}]
+          params_for_expand.merge!(Hash[params.select{|k, v| !matcher_names.include?(name.to_sym) }])
+          args = saved_args.dup
+        else
+          params_for_expand = params.dup
+        end
+        return yield(route, params_for_expand)
+      end
+      raise InvalidRouteException
     end
   end
 end
