@@ -71,14 +71,16 @@ module Pendragon
     def prepare!
       @prepared = true
       @routes.sort_by!(&:order) unless current.zero?
-      if Pendragon.configuration.enable_compiler?
-        class << self
-          include CompileHelpers
-          alias_method :old_recognize, :recognize
-          alias_method :recognize, :recognize_by_compiling_regexp
-        end
-        compile!
-      end
+      self.class.setup_compiler! && compile! if Pendragon.configuration.enable_compiler?
+    end
+
+    # Setups the compiler by using CompileHelpers
+    # @see Pendragon::CompileHelpers
+    def self.setup_compiler!
+      include CompileHelpers
+      alias_method :old_recognize, :recognize
+      alias_method :recognize, :recognize_by_compiling_regexp
+      true
     end
 
     # @return [Boolean] the router is already prepared?
@@ -105,6 +107,7 @@ module Pendragon
     # @param path_info [String]
     # @return [Array]
     def recognize_path(path_info)
+      prepare! unless prepared?
       route, params = recognize(Rack::MockRequest.env_for(path_info)).first
       [route.options[:name], params]
     end
@@ -131,13 +134,12 @@ module Pendragon
 
     # @!visibility private
     def scan(pattern, verb)
-      raise NotFound if (selected_routes = routes.select{|route| route.match(pattern) }).empty?
-
+      selected_routes = routes.select{|route| route.match(pattern) }
+      raise NotFound if selected_routes.empty?
       result = selected_routes.map do |route|
         next unless verb == route.verb
         yield route
       end.compact
-
       raise MethodNotAllowed.new(selected_routes.map(&:verb)) if result.empty?
       result
     end

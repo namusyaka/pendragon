@@ -2,6 +2,7 @@
 module Pendragon
   module CompileHelpers
     def compile!
+      return if compiled?
       @compiled_regexps = Pendragon::HTTP_VERBS.inject({}){|all, verb| all[verb] = []; all }
       @routes.each_with_index do |route, index|
         regexp = route.matcher.handler
