@@ -22,7 +22,7 @@ module Pendragon
 
       unless @compiled_regexps[verb] === path_info
         old_path_info = path_info
-        path_info = path_info[0..-2] if path_info != "/" and path_info[-1] == "/"
+        path_info = path_info[0..-2] if path_info != "/" and path_info.end_with?("/")
         raise NotFound if old_path_info == path_info || !(@compiled_regexps[verb] === path_info)
       end
 
