@@ -134,13 +134,10 @@ module Pendragon
 
     # @!visibility private
     def scan(pattern, verb)
-      selected_routes = routes.select{|route| route.match(pattern) }
-      raise NotFound if selected_routes.empty?
-      result = selected_routes.map do |route|
-        next unless verb == route.verb
-        yield route
-      end.compact
-      raise MethodNotAllowed.new(selected_routes.map(&:verb)) if result.empty?
+      _routes = routes.select{|route| route.match(pattern) }
+      raise_exception(404) if _routes.empty?
+      result = _routes.map{|route| yield(route) if verb == route.verb }.compact
+      raise_exception(405, :verbs => _routes.map(&:verb)) if result.empty?
       result
     end
 
@@ -198,6 +195,18 @@ module Pendragon
         return yield(route, params_for_expand, matcher)
       end
       raise InvalidRouteException
+    end
+
+    # @!visibility private
+    def raise_exception(error_code, options = {})
+      raise ->(error_code) {
+        case error_code
+        when 404
+          NotFound
+        when 405
+          MethodNotAllowed.new(options[:verbs])
+        end
+      }.(error_code)
     end
   end
 end
