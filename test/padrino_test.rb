@@ -148,7 +148,6 @@ describe "Pendragon::Padrino" do
   end
 
   should "match user agents" do
-    skip if enable_compiler?
     app = mock_app do
       get("/main", :agent => /IE/){ "hello IE" }
       get("/main"){ "hello" }
@@ -595,7 +594,6 @@ describe "Pendragon::Padrino" do
   end
 
   should '405 on wrong request_method' do
-    skip if enable_compiler?
     mock_app do
       post('/bar'){ "bar" }
     end
@@ -847,7 +845,6 @@ describe "Pendragon::Padrino" do
 
 
   should 'respect priorities' do
-    skip if enable_compiler?
     route_order = []
     mock_app do
       get(:index, :priority => :normal) { route_order << :normal; pass }
@@ -1083,7 +1080,6 @@ describe "Pendragon::Padrino" do
   end
 
   should "transitions to the next matching route on pass" do
-    skip if enable_compiler?
     mock_app do
       get '/:foo' do
         pass
@@ -1263,7 +1259,6 @@ describe "Pendragon::Padrino" do
   end
 
   should 'allows custom route-conditions to be set via route options using two routes' do
-    skip if enable_compiler?
     protector = Module.new do
       def protect(*args)
         condition { authorize(params["user"], params["password"]) }
@@ -1329,7 +1324,6 @@ describe "Pendragon::Padrino" do
   end
 
   should "allow passing & halting in before filters" do
-    skip if enable_compiler?
     mock_app do
       controller do
         before { env['QUERY_STRING'] == 'secret' or pass }
@@ -1813,10 +1807,8 @@ describe "Pendragon::Padrino" do
     post '/hi.json', {'_method'=>'PUT'}
     assert_equal 200, status
     assert_equal 'hi', body
-    unless enable_compiler?
-      post '/hi.json'
-      assert_equal 405, status
-    end
+    post '/hi.json'
+    assert_equal 405, status
   end
 
   should 'parse nested params' do
