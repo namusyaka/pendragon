@@ -5,9 +5,15 @@ install:
   - bundle update
 rvm:
   - 2.0.0
+  - 2.1.0
+  - jruby-head
+  - rbx
 notifications:
   recipients:
     - namusyaka@gmail.com
 branches:
   only:
     - master
+matrix:
+  allow_failures:
+    - rvm: rbx
