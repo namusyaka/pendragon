@@ -67,5 +67,7 @@ module Pendragon
     def symbolize(parameters)
       parameters.inject({}){|result, (key, val)| result[key.to_sym] = val; result }
     end
+
+    private :symbolize
   end
 end
