@@ -97,10 +97,8 @@ module Pendragon
     # @param request [Rack::Request]
     # @return [Array]
     def recognize(request)
-      path_info, verb, request_params = parse_request(request)
-      scan(path_info, verb) do |route|
-        [route, generate_route_params(route.match(path_info), request_params)]
-      end
+      pattern, verb, params = parse_request(request)
+      fetch(pattern, verb){|route| [route, params_for(route, pattern, params)] }
     end
 
     # Recognizes a given path
@@ -133,7 +131,7 @@ module Pendragon
     end
 
     # @!visibility private
-    def scan(pattern, verb)
+    def fetch(pattern, verb)
       _routes = routes.select{|route| route.match(pattern) }
       raise_exception(404) if _routes.empty?
       result = _routes.map{|route| yield(route) if verb == route.verb }.compact
@@ -159,17 +157,8 @@ module Pendragon
     end
 
     # @!visibility private
-    def generate_route_params(match_data, default_params)
-      params = {}
-      if match_data.names.empty?
-        params[:captures] = match_data.captures
-      else
-        params.merge!(match_data.names.inject({}){|result, name|
-          result[name.to_sym] = match_data[name] ? Rack::Utils.unescape(match_data[name]) : nil
-          result
-        }).merge!(default_params){|key, self_val, new_val| self_val || new_val }
-      end
-      params
+    def params_for(route, pattern, params)
+      route.params(pattern, params)
     end
 
     # @!visibility private

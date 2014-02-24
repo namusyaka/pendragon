@@ -18,16 +18,14 @@ module Pendragon
     end
 
     def recognize_by_compiling_regexp(request)
-      path_info, verb, request_params = parse_request(request)
-
-      unless @compiled_regexps[verb] === path_info
-        old_path_info = path_info
-        path_info = path_info[0..-2] if path_info != "/" and path_info.end_with?("/")
-        raise NotFound if old_path_info == path_info || !(@compiled_regexps[verb] === path_info)
+      pattern, verb, params = parse_request(request)
+      unless @compiled_regexps[verb] === pattern
+        old_pattern = pattern
+        pattern = pattern[0..-2] if pattern != "/" and pattern.end_with?("/")
+        raise NotFound if old_pattern == pattern || !(@compiled_regexps[verb] === pattern)
       end
-
       route = @routes.select{|route| route.verb == verb }.detect{|route| Regexp.last_match(route.index) }
-      [[route, generate_route_params(route.match(path_info), request_params)]]
+      [[route, params_for(route, pattern, params)]]
     end
   end
 end

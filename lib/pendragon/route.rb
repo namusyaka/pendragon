@@ -56,5 +56,16 @@ module Pendragon
       params.delete(:captures)
       matcher.expand(params) if matcher.mustermann?
     end
+
+    def params(pattern, parameters = {})
+      match_data = match(pattern)
+      return { :captures => match_data.captures } if match_data.names.empty?
+      params = matcher.handler.params(pattern, :captures => match_data) || {}
+      symbolize(params).merge(parameters){|key, old, new| old || new }
+    end
+
+    def symbolize(parameters)
+      parameters.inject({}){|result, (key, val)| result[key.to_sym] = val; result }
+    end
   end
 end
