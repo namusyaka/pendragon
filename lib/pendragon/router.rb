@@ -33,7 +33,7 @@ module Pendragon
     # @return the Rack style response
     def call(env)
       request = Rack::Request.new(env)
-      raise BadRequest unless valid_verb?(request.request_method)
+      raise_exception(400) unless valid_verb?(request.request_method)
       prepare! unless prepared?
       route, params = recognize(request).first
       body = route.arity != 0 ? route.call(params) : route.call
@@ -190,6 +190,8 @@ module Pendragon
     def raise_exception(error_code, options = {})
       raise ->(error_code) {
         case error_code
+        when 400
+          BadRequest
         when 404
           NotFound
         when 405
