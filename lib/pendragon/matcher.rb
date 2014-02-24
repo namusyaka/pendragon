@@ -1,4 +1,4 @@
-require 'mustermann'
+require 'mustermann/sinatra'
 
 module Pendragon
   class Matcher
@@ -59,7 +59,7 @@ module Pendragon
       @handler ||=
         case @path
         when String
-          Mustermann.new(@path, :capture => @capture)
+          Mustermann::Sinatra.new(@path, :capture => @capture)
         when Regexp
           /^(?:#{@path})$/
         end
