@@ -20,11 +20,7 @@ or
 
 ## Configuration
 
-If you enable compiler, performance will be improved at the expense of some features as below.
-
-* Route priority will not work (Might support in the future).
-* Duplicated routes will not work correctly.
-* MethodNotAllowed will not work.
+If you enable compiler, performance will be improved.
 
 This implementation was inspired by [rack-multiplexer](https://github.com/r7kamura/rack-multiplexer).
 
