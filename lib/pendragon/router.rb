@@ -34,7 +34,6 @@ module Pendragon
     def call(env)
       request = Rack::Request.new(env)
       raise_exception(400) unless valid_verb?(request.request_method)
-      prepare! unless prepared?
       route, params = recognize(request).first
       body = route.arity != 0 ? route.call(params) : route.call
       [200, {'Content-Type' => 'text/html;charset=utf-8'}, Array(body)]
@@ -97,6 +96,7 @@ module Pendragon
     # @param request [Rack::Request]
     # @return [Array]
     def recognize(request)
+      prepare! unless prepared?
       pattern, verb, params = parse_request(request)
       fetch(pattern, verb){|route| [route, params_for(route, pattern, params)] }
     end
@@ -105,7 +105,6 @@ module Pendragon
     # @param path_info [String]
     # @return [Array]
     def recognize_path(path_info)
-      prepare! unless prepared?
       route, params = recognize(Rack::MockRequest.env_for(path_info)).first
       [route.options[:name], params]
     end

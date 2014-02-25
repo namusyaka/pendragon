@@ -14,7 +14,6 @@ module Pendragon
       def call(env)
         request = Rack::Request.new(env)
         raise_exception(400) unless valid_verb?(request.request_method)
-        prepare! unless prepared?
         [200, {}, recognize(request)]
       rescue BadRequest, NotFound, MethodNotAllowed
         $!.call

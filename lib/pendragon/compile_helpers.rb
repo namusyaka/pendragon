@@ -24,6 +24,7 @@ module Pendragon
     end
 
     def recognize_by_compiling_regexp(request)
+      prepare! unless prepared?
       pattern, verb, params = parse_request(request)
       candidacies = match_with(pattern)
       raise_exception(404) if candidacies.empty?
