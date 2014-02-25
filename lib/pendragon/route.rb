@@ -58,10 +58,14 @@ module Pendragon
     end
 
     def params(pattern, parameters = {})
-      match_data = match(pattern)
-      return { :captures => match_data.captures } if match_data.names.empty?
-      params = matcher.handler.params(pattern, :captures => match_data) || {}
-      symbolize(params).merge(parameters){|key, old, new| old || new }
+      match_data, params = match(pattern), {}
+      if match_data.names.empty?
+        params.merge!(:captures => match_data.captures) unless match_data.captures.empty?
+        params
+      else
+        params = matcher.handler.params(pattern, :captures => match_data) || params
+        symbolize(params).merge(parameters){|key, old, new| old || new }
+      end
     end
 
     def symbolize(parameters)
