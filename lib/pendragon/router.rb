@@ -69,7 +69,7 @@ module Pendragon
     # This method is executed only once in the initial load
     def prepare!
       @prepared = true
-      @routes.sort_by!(&:order) unless current.zero?
+      @routes.sort_by!(&:order)
       self.class.setup_compiler! && compile! if Pendragon.configuration.enable_compiler?
     end
 
@@ -106,7 +106,7 @@ module Pendragon
     # @return [Array]
     def recognize_path(path_info)
       route, params = recognize(Rack::MockRequest.env_for(path_info)).first
-      [route.options[:name], params]
+      [route.name, params]
     end
 
     # Returns a expanded path matched with the conditions as arguments
@@ -169,7 +169,7 @@ module Pendragon
       params = args.delete_at(args.last.is_a?(Hash) ? -1 : 0) || {}
       saved_args = args.dup
       @routes.each do |route|
-        next unless route.options[:name] == name
+        next unless route.name == name
         matcher = route.matcher
         if !args.empty? and matcher.mustermann?
           matcher_names = matcher.names

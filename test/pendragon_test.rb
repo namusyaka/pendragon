@@ -82,6 +82,14 @@ describe Pendragon do
       head("/")
       assert_equal "", body
     end
+
+    should "supports for respecting route order" do
+      @pendragon.get("/", order: 2){ "three" }
+      @pendragon.get("/", order: 0){ "one" }
+      @pendragon.get("/", order: 1){ "two" }
+      request = Rack::MockRequest.env_for("/")
+      assert_equal @pendragon.recognize(request).map{|route, _| route.call }, ["one", "two", "three"]
+    end
   end
   describe "regexp routing" do
     before(:each){ @pendragon.reset! }

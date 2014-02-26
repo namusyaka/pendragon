@@ -3,7 +3,7 @@ module Pendragon
 
     ##
     # The accessors are useful to access from Pendragon::Router
-    attr_accessor :block, :capture, :router, :options, :verb, :order
+    attr_accessor :block, :capture, :router, :options, :verb, :order, :name
 
     ##
     # For compile option
@@ -13,9 +13,10 @@ module Pendragon
     # Constructs a new instance of Pendragon::Route
     def initialize(path, verb, options = {}, &block)
       @block = block if block_given?
-      @path, @verb, @options = path, verb, options
+      @path, @verb = path, verb
       @capture = {}
       @order = 0
+      merge_with_options!(options)
     end
 
     def matcher
@@ -33,15 +34,6 @@ module Pendragon
 
     def match(pattern)
       matcher.match(pattern)
-    end
-
-    def name
-      @options[:name]
-    end
-
-    def name=(value)
-      warn "[DEPRECATION] 'name=' is depreacted. Please use 'options[:name]=' instead"
-      @options[:name] = value
     end
 
     def to(&block)
@@ -70,6 +62,13 @@ module Pendragon
 
     def symbolize(parameters)
       parameters.inject({}){|result, (key, val)| result[key.to_sym] = val; result }
+    end
+
+    def merge_with_options!(options)
+      @options = {} unless @options
+      options.each_pair do |key, value|
+        respond_to?("#{key}=") ? __send__("#{key}=", value) : (@options[key] = value)
+      end
     end
 
     private :symbolize
