@@ -1,132 +1,198 @@
 # Pendragon
 
-[![Build Status](https://travis-ci.org/namusyaka/pendragon.png)](https://travis-ci.org/namusyaka/pendragon)
+[![Build Status](https://travis-ci.org/namusyaka/pendragon.png)](https://travis-ci.org/namusyaka/pendragon) [![Gem Version](https://badge.fury.io/rb/pendragon.png)](http://badge.fury.io/rb/pendragon)
 
-Provides an HTTP router for use in Rack and Padrino.
+Pendragon provides an HTTP router for use in Rack and Padrino. 
+As a Rack application, makes it easy to define the complicated routing.
+As a Padrino plugin, your application uses Pendragon instead of http_router. 
+Therefore, some bugs of http_router will be fixed.
 
-Pendragon works only in Ruby2.0.
+*If you want to use in Ruby1.9, you can do it by using [mustermann/1.9-support branch](https://github.com/rkh/mustermann/tree/1.9-support).*
 
-If you want to use in Ruby1.9, you can do it by using [mustermann/1.9-support branch](https://github.com/rkh/mustermann/tree/1.9-support).
+```ruby
+Pendragon.new do
+  get("/"){ "hello world" }
+  get("/foo/:bar", name: :foo) do |params|
+    "foo is #{params[:bar]}"
+  end
+end
+```
 
 ## Installation
 
-add this line to your Gemfile.
+Depends on [rack](https://github.com/rack/rack) and [mustermann](https://github.com/rkh/mustermann).
 
-`gem 'pendragon'`
+`gem install pendragon`
 
-or
+## Usage
 
-`$ gem install pendragon`
+### Configuration
 
-## Configuration
-
-If you enable compiler, performance will be improved.
-
-This implementation was inspired by [rack-multiplexer](https://github.com/r7kamura/rack-multiplexer).
+Pendragon has one parameter of configuration for now, that is `enable_compiler`.
+If enable the parameter, your pendragon's performance will be improved.
+However, it will increase the first load time.
 
 ```ruby
 Pendragon.configure do |config|
-  config.enable_compiler = true # default value is false
+  config.enable_compiler = true
 end
 ```
 
-## Example
+*The compiler mode was inspired by [rack-multiplexer](https://github.com/r7kamura/rack-multiplexer). Thank you!*
 
-Write this code to your config.ru.
+### Register the route
+
+It has some methods to register a route. For example, `#get`, `#post` and `#delete` are so.
+This section introduces all those methods.
+
+#### `add(verb, path, option, &block)`
+
+The method is the basis of the registration method of all.
+In comparison with other registration methods, one argument is increased.
 
 ```ruby
-require 'pendragon'
-
-pendragon = Pendragon.new
-pendragon.add(:get, "/") do
-  "get"
+Pendragon.new do
+  # The two approach have the same meaning.
+  add(:get, "/"){ "hello world" }
+  get("/"){ "hello world" }
 end
-
-pendragon.get("/hey") do
-  "hey"
-end
-
-pendragon.post("/hey") do
-  "hey, postman!"
-end
-
-
-pendragon.get("/users/:user_id") do |params|
-  params.inspect
-end
-
-run pendragon
 ```
 
-## Normal path
+#### `get(path, option, &block)`, `post`, `delete`, `put` and `head`
 
-### Base
+Basically the usage is the same with `#add`.
+You may as well use those methods instead of `#add` because those methods are easy to understand.
 
 ```ruby
-pendragon = Pendragon.new
-
-pendragon.add(:get, "/") do
-  "hello"
+Pendragon.new do
+  get("/"){ "hello world" }
+  post("/"){ "hello world" }
+  delete("/"){ "hello world" }
+  put("/"){ "hello world" }
+  head("/"){ "hello world" }
 end
 ```
 
-### Regexp
+##### Path
+
+The path must be an instance of String (this must be complied with the Mustermann::Sinatra's rule) or Regexp.
+
+##### Route options
+
+|name|types   |description               |
+|:----|:------|:-------------------------|
+|name |symbol |specify the name of route for `Pendragon::Router#path` method.|
+|order|integer|specify the order for the prioritized routes.|
+|capture|hash|specify the capture for matching condition. [more information here](https://github.com/rkh/mustermann)|
+
+##### Block Parameters
+
+The block is allowed to pass a parameter.
+It will be an instance of Hash.
 
 ```ruby
-pendragon = Pendragon.new
-
-pendragon.add(:get, /(\d+)/) do
-  "hello"
+pendragon = Pendragon.new do
+  get("/:id/:foo/:bar"){|params| params.inspect }
 end
+
+request = Rack::MockRequest.env_for("/123/hey/ho")
+pendragon.recognize(request).first.call #=> '{id: "123", foo: "hey", bar: "ho"}'
 ```
 
-### Params
+### Recognize the route
 
-```ruby
-pendragon = Pendragon.new
+The route registered can be recognized by several methods.
 
-pendragon.add(:get, "/users/:name") do |params|
-  "hello #{params[:name]}"
-end
+#### `recognize(request)`
 
-pendragon.add(:get, /\/page\/(.+?)/) do |params|
-  "show #{params[:captures]}"
-end
-```
-
-### Captures
-
-```ruby
-pendragon = Pendragon.new
-
-users = pendragon.add(:get, "/users/:name") do |params|
-  "hello #{params[:name]}"
-end
-users.captures[:name] = /\d+/
-```
-
-### Name and Path
+This method returns all the routes that match the conditions.
+The format of returns will be such as `[[Pendragon::Route, params], ...]`.
+The request must be an instance of `Rack::Request` or Hash created by `Rack::MockRequest.env_for`.
 
 ```ruby
 pendragon = Pendragon.new
+index = pendragon.get("/"){ "hello world" }
+foo   = pendragon.get("/foo/:bar"){ "foo is bar" }
 
-users = pendragon.add(:get, "/users/:name") do |params|
-  "hello #{params[:name]}"
-end
-users.name = :users
+mock_request = Rack::MockRequest.env_for("/")
+route, params = pendragon.recognize(mock_request).first
 
-pendragon.path(:users, :name => "howl") #=> "/users/howl"
+route.path == index.path #=> true
+params #=> {}
+
+mock_request = Rack::MockRequest.env_for("/foo/baz")
+route, params = pendragon.recognize(mock_request).first
+
+route.path == foo.path #=> true
+params #=> {bar: "baz"}
 ```
 
-## with Padrino
+#### `recognize_path(path_info)`
 
-If you use Pendragon, your application does not use http_router.
+Recognizes a route from `path_info`.
+The method uses `#recognize`, but return value is not same with it.
+Maybe this is useful if you set the name to the route.
+
+```ruby
+pendragon = Pendragon.new do
+  get("/", name: :index){ "hello world" }
+  get("/:id", name: :foo){ "fooooo" }
+end
+
+pendragon.recognize_path("/") #=> [:index, {}]
+pendragon.recognize_path("/hey") #=> [:foo, {id: "hey"}]
+```
+
+#### `path(name, *args)`
+
+Recognizes a route from route's name, and expands the path from parameters.
+If you pass a name that does not exist, Pendragon raises `InvalidRouteException`.
+The parameters that is not required to expand will be treated as query.
+
+```ruby
+pendragon = Pendragon.new do
+  get("/", name: :index){ "hello world" }
+  get("/:id", name: :foo){ "fooooo" }
+end
+
+pendragon.path(:index) #=> "/"
+pendragon.path(:foo, id: "123") #=> "/123"
+pendragon.path(:foo, id: "123", bar: "hey") #=> "/123?bar=hey"
+```
+
+### Prioritized Routes
+
+Pendragon supports for respecting route order.
+If you want to use this, you should pass the `:order` option to the registration method.
+
+```ruby
+pendragon = Pendragon.new do
+  get("/", order: 1){ "two" }
+  get("/", order: 0){ "one" }
+  get("/", order: 2){ "three" }
+end
+
+request = Rack::MockRequest.env_for("/")
+pendragon.recognize(request).map{|route, _| route.call } #=> ["one", "two", "three"]
+```
+
+### With Padrino
+
+Add `register Pendragon::Padrino` to your padrino application.
+Of course, Pendragon has compatibility with Padrino Routing.
+
 
 ```ruby
 require 'pendragon/padrino'
 
 class App < Padrino::Application
   register Pendragon::Padrino
+  
+  ##
+  # Also, your app's performance will be improved by using compiler mode.
+  # Pendragon.configure do |config|
+  #   config.enable_compiler = true
+  # end
 
   get :index do
     "hello pendragon!"
