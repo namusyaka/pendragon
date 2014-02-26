@@ -83,12 +83,26 @@ describe Pendragon do
       assert_equal "", body
     end
 
-    should "supports for respecting route order" do
+    should "support for respecting route order" do
       @pendragon.get("/", order: 2){ "three" }
       @pendragon.get("/", order: 0){ "one" }
       @pendragon.get("/", order: 1){ "two" }
       request = Rack::MockRequest.env_for("/")
       assert_equal @pendragon.recognize(request).map{|route, _| route.call }, ["one", "two", "three"]
+    end
+
+    should "support for correct options" do
+      capture = {foo: /\d+/, bar: "bar"}
+      foo_route   = @pendragon.get("/:foo/:bar", capture: capture){}
+      named_route = @pendragon.get("/name/:name", name: :named_route){}
+      incorrect_route = @pendragon.get("/router", router: :incorrect!){}
+      assert_equal foo_route.capture, capture
+      assert_equal named_route.name, :named_route
+      assert_equal foo_route.match("/foo/bar"), nil
+      assert_equal foo_route.match("/123/baz"), nil
+      assert_equal foo_route.match("/123/bar").instance_of?(MatchData), true
+      assert_equal @pendragon.path(:named_route, name: :foo), "/name/foo"
+      assert_equal incorrect_route.instance_variable_get(:@router).instance_of?(Pendragon::Router), true
     end
   end
   describe "regexp routing" do

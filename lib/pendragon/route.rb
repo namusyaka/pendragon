@@ -1,15 +1,18 @@
 module Pendragon
   class Route
 
-    ##
     # The accessors are useful to access from Pendragon::Router
-    attr_accessor :block, :capture, :router, :options, :verb, :order, :name
+    attr_accessor :name, :capture, :order, :options
 
-    ##
     # For compile option
     attr_accessor :index
 
-    ##
+    # The verb should be read from Pendragon::Router
+    attr_reader :verb, :block
+
+    # The router will be treated in this class.
+    attr_writer :router
+
     # Constructs a new instance of Pendragon::Route
     def initialize(path, verb, options = {}, &block)
       @block = block if block_given?
@@ -25,7 +28,7 @@ module Pendragon
     end
 
     def arity
-      block.arity
+      @block.arity
     end
 
     def call(*args)
@@ -38,8 +41,8 @@ module Pendragon
 
     def to(&block)
       @block = block if block_given?
-      @order = router.current
-      router.increment_order!
+      @order = @router.current
+      @router.increment_order!
     end
 
     def path(*args)
@@ -67,10 +70,14 @@ module Pendragon
     def merge_with_options!(options)
       @options = {} unless @options
       options.each_pair do |key, value|
-        respond_to?("#{key}=") ? __send__("#{key}=", value) : (@options[key] = value)
+        accessor?(key) ? __send__("#{key}=", value) : (@options[key] = value)
       end
     end
 
-    private :symbolize
+    def accessor?(key)
+      respond_to?("#{key}=") && respond_to?(key)
+    end
+
+    private :symbolize, :merge_with_options!, :accessor?
   end
 end
