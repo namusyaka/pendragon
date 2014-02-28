@@ -83,24 +83,11 @@ describe Pendragon do
       assert_equal "", body
     end
 
-    should "support for respecting route order" do
-      @pendragon.get("/", order: 2){ "three" }
-      @pendragon.get("/", order: 0){ "one" }
-      @pendragon.get("/", order: 1){ "two" }
-      request = Rack::MockRequest.env_for("/")
-      assert_equal @pendragon.recognize(request).map{|route, _| route.call }, ["one", "two", "three"]
-    end
-
     should "support for correct options" do
-      capture = {foo: /\d+/, bar: "bar"}
-      foo_route   = @pendragon.get("/:foo/:bar", capture: capture){}
       named_route = @pendragon.get("/name/:name", name: :named_route){}
       incorrect_route = @pendragon.get("/router", router: :incorrect!){}
-      assert_equal foo_route.capture, capture
+      status_route = @pendragon.get("/router", status: 200){}
       assert_equal named_route.name, :named_route
-      assert_equal foo_route.match("/foo/bar"), nil
-      assert_equal foo_route.match("/123/baz"), nil
-      assert_equal foo_route.match("/123/bar").instance_of?(MatchData), true
       assert_equal @pendragon.path(:named_route, name: :foo), "/name/foo"
       assert_equal incorrect_route.instance_variable_get(:@router).instance_of?(Pendragon::Router), true
     end
@@ -113,6 +100,50 @@ describe Pendragon do
       assert_equal "yay", body
     end
   end
+
+  describe "route options" do
+    should "support for :capture option" do
+      capture = {foo: /\d+/, bar: "bar"}
+      route = @pendragon.get("/:foo/:bar", capture: capture){}
+      assert_equal route.capture, capture
+      assert_equal route.match("/foo/bar"), nil
+      assert_equal route.match("/123/baz"), nil
+      assert_equal route.match("/123/bar").instance_of?(MatchData), true
+    end
+
+    should "support for :name option" do
+      route = @pendragon.get("/name/:name", name: :named_route){}
+      assert_equal route.name, :named_route
+      assert_equal @pendragon.path(:named_route, name: :foo), "/name/foo"
+    end
+
+    should "not support for :router option" do
+      route = @pendragon.get("/router", router: :incorrect!){}
+      assert_equal route.instance_variable_get(:@router).instance_of?(Pendragon::Router), true
+    end
+
+    should "support for :order option" do
+      @pendragon.get("/", order: 2){ "three" }
+      @pendragon.get("/", order: 0){ "one" }
+      @pendragon.get("/", order: 1){ "two" }
+      request = Rack::MockRequest.env_for("/")
+      assert_equal @pendragon.recognize(request).map{|route, _| route.call }, ["one", "two", "three"]
+    end
+
+    should "support for :status option" do
+      @pendragon.get("/", status: 201){ "hey" }
+      get "/"
+      assert_equal 201, status
+    end
+
+    should "support for :header option" do
+      header = {"Content-Type" => "text/plain;"}
+      @pendragon.get("/", header: header){ "hey" }
+      get "/"
+      assert_equal header.merge("Content-Length" => "3"), headers
+    end
+  end
+
   describe "regexp routing" do
     before(:each){ @pendragon.reset! }
 

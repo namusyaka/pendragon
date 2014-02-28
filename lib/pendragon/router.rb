@@ -44,7 +44,9 @@ module Pendragon
     def invoke(route, params)
       response = route.arity != 0 ? route.call(params) : route.call
       return response unless Pendragon.configuration.auto_rack_format?
-      [200, {'Content-Type' => 'text/html;charset=utf-8'}, Array(response)]
+      status = route.options[:status] || 200
+      header = {'Content-Type' => 'text/html;charset=utf-8'}.merge(route.options[:header] || {})
+      [status, header, Array(response)]
     end
 
     # Provides some methods intuitive than #add
