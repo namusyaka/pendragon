@@ -47,14 +47,14 @@ end
 #### `auto_rack_format`
 
 ```ruby
-Pendragon.configure do |config|
-  config.auto_rack_format = false
-end
 # Enable the param (default)
 Pendragon.new do
   get("/"){ "hey" }
 end
 
+Pendragon.configure do |config|
+  config.auto_rack_format = false
+end
 # Disable the param
 Pendragon.new do
   get("/"){ [200, {"Content-Type" => "text/html;charset=utf-8"}, ["hey"]] }
