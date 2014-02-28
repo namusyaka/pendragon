@@ -47,6 +47,9 @@ end
 #### `auto_rack_format`
 
 ```ruby
+Pendragon.configure do |config|
+  config.auto_rack_format = false
+end
 # Enable the param (default)
 Pendragon.new do
   get("/"){ "hey" }
