@@ -28,17 +28,35 @@ Depends on [rack](https://github.com/rack/rack) and [mustermann](https://github.
 
 ### Configuration
 
-Pendragon has one parameter of configuration for now, that is `enable_compiler`.
-If enable the parameter, your pendragon's performance will be improved.
-However, it will increase the first load time.
+|name            |types  |default|description               |
+|:---------------|:------|:------|:-------------------------|
+|enable_compiler |boolean|false|The performance will be improved. However, it will increase the first load time.|
+|auto_rack_format|boolean|true|If disable this param, the block of route should return the response of valid rack format.|
+
+#### `enable_compiler`
 
 ```ruby
+# Performance will be improved!
 Pendragon.configure do |config|
   config.enable_compiler = true
 end
 ```
 
 *The compiler mode was inspired by [rack-multiplexer](https://github.com/r7kamura/rack-multiplexer). Thank you!*
+
+#### `auto_rack_format`
+
+```ruby
+# Enable the param (default)
+Pendragon.new do
+  get("/"){ "hey" }
+end
+
+# Disable the param
+Pendragon.new do
+  get("/"){ [200, {"Content-Type" => "text/html;charset=utf-8"}, ["hey"]] }
+end
+```
 
 ### Register the route
 
