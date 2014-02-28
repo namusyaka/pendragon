@@ -105,6 +105,8 @@ The path must be an instance of String (this must be complied with the Musterman
 |name |symbol |specify the name of route for `Pendragon::Router#path` method.|
 |order|integer|specify the order for the prioritized routes.|
 |capture|hash|specify the capture for matching condition. [more information here](https://github.com/rkh/mustermann)|
+|status|integer|specify the status code of response|
+|header|hash|specify the header of response|
 
 ##### Block Parameters
 
