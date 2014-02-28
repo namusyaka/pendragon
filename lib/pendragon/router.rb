@@ -36,6 +36,7 @@ module Pendragon
       raise_exception(400) unless valid_verb?(request.request_method)
       route, params = recognize(request).first
       body = route.arity != 0 ? route.call(params) : route.call
+      return body unless Pendragon.configuration.auto_rack_format?
       [200, {'Content-Type' => 'text/html;charset=utf-8'}, Array(body)]
     rescue BadRequest, NotFound, MethodNotAllowed
       $!.call
