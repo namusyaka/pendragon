@@ -15,9 +15,14 @@ module Pendragon
     # @see Pendragon::Router#compile
     attr_boolean_accessor :enable_compiler
 
+    # Automatically convert response into Rack format.
+    # Default value is `true`.
+    attr_boolean_accessor :auto_rack_format
+
     # Constructs an instance of Pendragon::Configuration
     def initialize
       @enable_compiler  = false
+      @auto_rack_format = true
     end
 
     # Returns an instance variable
