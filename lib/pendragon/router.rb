@@ -34,12 +34,17 @@ module Pendragon
     def call(env)
       request = Rack::Request.new(env)
       raise_exception(400) unless valid_verb?(request.request_method)
-      route, params = recognize(request).first
-      body = route.arity != 0 ? route.call(params) : route.call
-      return body unless Pendragon.configuration.auto_rack_format?
-      [200, {'Content-Type' => 'text/html;charset=utf-8'}, Array(body)]
+      recognize(request).each do |route, params|
+        catch(:pass){ return invoke(route, params) }
+      end
     rescue BadRequest, NotFound, MethodNotAllowed
       $!.call
+    end
+
+    def invoke(route, params)
+      response = route.arity != 0 ? route.call(params) : route.call
+      return response unless Pendragon.configuration.auto_rack_format?
+      [200, {'Content-Type' => 'text/html;charset=utf-8'}, Array(response)]
     end
 
     # Provides some methods intuitive than #add

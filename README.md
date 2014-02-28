@@ -197,6 +197,21 @@ request = Rack::MockRequest.env_for("/")
 pendragon.recognize(request).map{|route, _| route.call } #=> ["one", "two", "three"]
 ```
 
+### Passing
+
+A route can punt processing to the next matching route using `throw :pass`
+
+```ruby
+pendragon = Pendragon.new do
+  foo = nil
+  get("/"){ foo = "yay"; throw :pass }
+  get("/"){ foo }
+end
+
+request = Rack::MockRequest.env_for("/")
+pendragon.call(request) #=> [200, {"Content-Type"=>"text/html;charset=utf-8"}, ["yay"]]
+```
+
 ### With Padrino
 
 Add `register Pendragon::Padrino` to your padrino application.

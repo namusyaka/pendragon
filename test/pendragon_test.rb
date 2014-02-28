@@ -104,6 +104,14 @@ describe Pendragon do
       assert_equal @pendragon.path(:named_route, name: :foo), "/name/foo"
       assert_equal incorrect_route.instance_variable_get(:@router).instance_of?(Pendragon::Router), true
     end
+
+    should "allow to throw :pass for routing like journey" do
+      foo = nil
+      @pendragon.get("/"){ foo = "yay"; throw :pass }
+      @pendragon.get("/"){ foo }
+      get "/"
+      assert_equal "yay", body
+    end
   end
   describe "regexp routing" do
     before(:each){ @pendragon.reset! }
