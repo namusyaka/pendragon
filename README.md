@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/namusyaka/pendragon.png)](https://travis-ci.org/namusyaka/pendragon) [![Gem Version](https://badge.fury.io/rb/pendragon.png)](http://badge.fury.io/rb/pendragon)
 
 Pendragon provides an HTTP router for use in Rack and Padrino. 
-As a Rack application, makes it easy to define the complicated routing.
+As a Rack application, it makes it easy to define complicated routing.
 As a Padrino plugin, your application uses Pendragon instead of http_router. 
 Therefore, some bugs of http_router will be fixed.
 
