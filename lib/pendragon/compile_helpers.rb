@@ -28,8 +28,8 @@ module Pendragon
       pattern, verb, params = parse_request(request)
       candidacies = match_with(pattern)
       raise_exception(404) if candidacies.empty?
-      candidacies.reject!{|route| route.verb != verb }
-      raise_exception(405) if candidacies.empty?
+      candidacies, allows = candidacies.partition{|route| route.verb == verb }
+      raise_exception(405, verbs: allows.map(&:verb)) if candidacies.empty?
       candidacies.map{|route| [route, params_for(route, pattern, params)]}
     end
 

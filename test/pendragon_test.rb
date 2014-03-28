@@ -197,4 +197,13 @@ describe Pendragon do
       assert_equal @app.path(:bar), "/"
     end
   end
+
+  describe "header" do
+    should "set Allow header when occur 405" do
+      @pendragon.get("/"){}
+      @pendragon.put("/"){}
+      post "/"
+      assert_equal response.header['Allow'], "GET, PUT"
+    end
+  end
 end

@@ -601,6 +601,15 @@ describe "Pendragon::Padrino" do
     assert_equal 405, status
   end
 
+  should "set Allow header when occur 405" do
+    mock_app do
+      post("/bar"){}
+      put("/bar"){}
+    end
+    get "/bar"
+    assert_equal "POST, PUT", response.headers['Allow']
+  end
+
   should 'respond to' do
     mock_app do
       get(:a, :provides => :js){ "js" }

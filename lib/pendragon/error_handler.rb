@@ -34,6 +34,10 @@ module Pendragon
   class MethodNotAllowed < ErrorHandler
     set :status, 405
     set :body,   "Method Not Allowed"
+
+    def initialize(verbs)
+      default_response[1].merge!("Allow" => verbs.map{|verb| verb.upcase } * ", ")
+    end
   end
 
   class BadRequest < ErrorHandler
