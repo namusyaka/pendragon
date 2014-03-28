@@ -87,9 +87,9 @@ describe Pendragon do
       named_route = @pendragon.get("/name/:name", name: :named_route){}
       incorrect_route = @pendragon.get("/router", router: :incorrect!){}
       status_route = @pendragon.get("/router", status: 200){}
-      assert_equal named_route.name, :named_route
-      assert_equal @pendragon.path(:named_route, name: :foo), "/name/foo"
-      assert_equal incorrect_route.instance_variable_get(:@router).instance_of?(Pendragon::Router), true
+      assert_equal :named_route, named_route.name
+      assert_equal "/name/foo", @pendragon.path(:named_route, name: :foo)
+      assert_equal true, incorrect_route.instance_variable_get(:@router).instance_of?(Pendragon::Router)
     end
 
     should "allow to throw :pass for routing like journey" do
@@ -106,20 +106,20 @@ describe Pendragon do
       capture = {foo: /\d+/, bar: "bar"}
       route = @pendragon.get("/:foo/:bar", capture: capture){}
       assert_equal route.capture, capture
-      assert_equal route.match("/foo/bar"), nil
-      assert_equal route.match("/123/baz"), nil
-      assert_equal route.match("/123/bar").instance_of?(MatchData), true
+      assert_equal nil, route.match("/foo/bar")
+      assert_equal nil, route.match("/123/baz")
+      assert_equal true, route.match("/123/bar").instance_of?(MatchData)
     end
 
     should "support for :name option" do
       route = @pendragon.get("/name/:name", name: :named_route){}
-      assert_equal route.name, :named_route
-      assert_equal @pendragon.path(:named_route, name: :foo), "/name/foo"
+      assert_equal :named_route, route.name
+      assert_equal "/name/foo", @pendragon.path(:named_route, name: :foo)
     end
 
     should "not support for :router option" do
       route = @pendragon.get("/router", router: :incorrect!){}
-      assert_equal route.instance_variable_get(:@router).instance_of?(Pendragon::Router), true
+      assert_equal true, route.instance_variable_get(:@router).instance_of?(Pendragon::Router)
     end
 
     should "support for :order option" do
@@ -127,7 +127,7 @@ describe Pendragon do
       @pendragon.get("/", order: 0){ "one" }
       @pendragon.get("/", order: 1){ "two" }
       request = Rack::MockRequest.env_for("/")
-      assert_equal @pendragon.recognize(request).map{|route, _| route.call }, ["one", "two", "three"]
+      assert_equal ["one", "two", "three"], @pendragon.recognize(request).map{|route, _| route.call }
     end
 
     should "support for :status option" do
@@ -168,18 +168,18 @@ describe Pendragon do
       foo_bar = @pendragon.add(:post, "/foo/bar", :name => :foo_bar){}
       users = @pendragon.add(:get, "/users/:user_id", :name => :users){}
 
-      assert_equal @pendragon.path(:index), "/"
-      assert_equal @pendragon.path(:foo_bar), "/foo/bar"
-      assert_equal @pendragon.path(:users, :user_id => 1), "/users/1"
-      assert_equal @pendragon.path(:users, :user_id => 1, :query => "string"), "/users/1?query=string"
+      assert_equal "/", @pendragon.path(:index)
+      assert_equal "/foo/bar", @pendragon.path(:foo_bar)
+      assert_equal "/users/1", @pendragon.path(:users, :user_id => 1)
+      assert_equal "/users/1?query=string", @pendragon.path(:users, :user_id => 1, :query => "string")
     end
 
     should "regexp" do
       index = @pendragon.add(:get, /.+?/, :name => :index){}
       foo_bar = @pendragon.add(:post, /\d+/, :name => :foo_bar){}
 
-      assert_equal @pendragon.path(:index), /.+?/
-      assert_equal @pendragon.path(:foo_bar), /\d+/
+      assert_equal /.+?/, @pendragon.path(:index)
+      assert_equal /\d+/, @pendragon.path(:foo_bar)
     end
   end
 
@@ -193,8 +193,8 @@ describe Pendragon do
       assert_equal "foo", body
       post("/")
       assert_equal "bar", body
-      assert_equal @app.path(:foo), "/"
-      assert_equal @app.path(:bar), "/"
+      assert_equal "/", @app.path(:foo)
+      assert_equal "/", @app.path(:bar)
     end
   end
 
@@ -203,7 +203,7 @@ describe Pendragon do
       @pendragon.get("/"){}
       @pendragon.put("/"){}
       post "/"
-      assert_equal response.header['Allow'], "GET, PUT"
+      assert_equal "GET, PUT", response.header['Allow']
     end
   end
 end
