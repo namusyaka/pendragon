@@ -1,5 +1,3 @@
 require 'pendragon'
 
-Pendragon.configure do |config|
-  config.enable_compiler = true
-end
+ENABLE_COMPILER = true

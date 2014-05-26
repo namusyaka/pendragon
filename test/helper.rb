@@ -21,12 +21,13 @@ end
 class MiniTest::Spec
   include Rack::Test::Methods
 
-  def pendragon
-    @app = Pendragon.new
-  end
-
-  def enable_compiler?
-    Pendragon.configuration.enable_compiler?
+  def pendragon(&block)
+    if !block_given? && defined?(ENABLE_COMPILER)
+      block = Proc.new do |config|
+        config.enable_compiler = true
+      end
+    end
+    @app = Pendragon.new(&block)
   end
 
   def mock_app(base = nil, &block)

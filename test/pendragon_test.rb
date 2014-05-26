@@ -3,7 +3,7 @@ $:.unshift(File.dirname(__FILE__))
 require 'helper'
 
 describe Pendragon do
-  setup{ @pendragon = pendragon }
+  setup{ @pendragon = pendragon{|config| config } }
 
   describe "normal routing" do
     before(:each){ @pendragon.reset! }
@@ -185,10 +185,8 @@ describe Pendragon do
 
   describe "#new allows block" do
     should "#new support for block." do
-      @app = Pendragon.new do
-        foo = add(:get, "/", :name => :foo){"foo"}
-        bar = add(:post, "/", :name => :bar){"bar"}
-      end
+      foo = @pendragon.add(:get, "/", :name => :foo){"foo"}
+      bar = @pendragon.add(:post, "/", :name => :bar){"bar"}
       get("/")
       assert_equal "foo", body
       post("/")

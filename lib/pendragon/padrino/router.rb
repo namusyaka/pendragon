@@ -23,6 +23,10 @@ module Pendragon
           matcher.mustermann? ? matcher.expand(params) : route.path_for_generation
         end
       end
+
+      def configuration
+        @configuration ||= Pendragon::Configuration.new
+      end
     end
   end
 end
