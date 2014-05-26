@@ -3,7 +3,7 @@ $:.unshift(File.dirname(__FILE__))
 require 'helper'
 
 describe Pendragon do
-  setup{ @pendragon = pendragon{|config| config } }
+  setup{ @pendragon = pendragon{|config| config.enable_compiler = defined?(ENABLE_COMPILER) } }
 
   describe "normal routing" do
     before(:each){ @pendragon.reset! }

@@ -32,6 +32,7 @@ class MiniTest::Spec
 
   def mock_app(base = nil, &block)
     @app = Sinatra.new(base || ::Padrino::Application, &block)
+    @app.class_eval{ set :pendragon, :enable_compiler => defined?(ENABLE_COMPILER) }
   end
 
   def app
