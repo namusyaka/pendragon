@@ -5,7 +5,15 @@ module Pendragon
       ROUTE_PRIORITY       = {:high => 0, :normal => 1, :low => 2} unless defined?(ROUTE_PRIORITY)
 
       def router
-        @router ||= ::Pendragon::Padrino::Router.new
+        unless @router
+          @router = ::Pendragon::Padrino::Router.new
+          @router.configuration = Pendragon::Configuration.new
+          if settings.respond_to?(:pendragon) && settings.pendragon.instance_of?(Hash)
+            settings.pendragon.each_pair do |key, value|
+              @router.configuration.send("#{key}=", value)
+            end
+          end
+        end
         block_given? ? yield(@router) : @router
       end
 

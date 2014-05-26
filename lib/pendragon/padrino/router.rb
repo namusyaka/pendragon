@@ -3,6 +3,8 @@ require 'pendragon' unless defined?(Pendragon::Router)
 module Pendragon
   module Padrino
     class Router < Pendragon::Router
+      attr_accessor :configuration
+
       def add(verb, path, options = {}, &block)
         route = Route.new(path, verb, options, &block)
         route.path_for_generation = options[:path_for_generation] if options[:path_for_generation]
@@ -25,7 +27,7 @@ module Pendragon
       end
 
       def configuration
-        @configuration ||= Pendragon::Configuration.new
+        @configuration || Pendragon::Configuration.new
       end
     end
   end
