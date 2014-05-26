@@ -37,7 +37,7 @@ Depends on [rack](https://github.com/rack/rack) and [mustermann](https://github.
 
 ```ruby
 # Performance will be improved!
-Pendragon.configure do |config|
+Pendragon.new do |config|
   config.enable_compiler = true
 end
 ```
@@ -52,12 +52,24 @@ Pendragon.new do
   get("/"){ "hey" }
 end
 
-Pendragon.configure do |config|
+pendragon = Pendragon.new do |config|
   config.auto_rack_format = false
 end
 # Disable the param
-Pendragon.new do
-  get("/"){ [200, {"Content-Type" => "text/html;charset=utf-8"}, ["hey"]] }
+pendragon.get("/"){ [200, {"Content-Type" => "text/html;charset=utf-8"}, ["hey"]] }
+```
+
+#### Deprecated
+
+```ruby
+# Global configuration style is deprecated since 0.5.0
+Pendragon.configure do |config|
+  config.enable_compiler = true
+end
+
+# Please use new syntax.
+pendragon = Pendragon.new do |config|
+  config.enable_compiler = true
 end
 ```
 
@@ -225,12 +237,9 @@ require 'pendragon/padrino'
 
 class App < Padrino::Application
   register Pendragon::Padrino
-  
-  ##
+
   # Also, your app's performance will be improved by using compiler mode.
-  # Pendragon.configure do |config|
-  #   config.enable_compiler = true
-  # end
+  set :pendragon, enable_compiler: true
 
   get :index do
     "hello pendragon!"
