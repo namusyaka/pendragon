@@ -1,6 +1,24 @@
+require 'pendragon/engine/recognizer'
 
 module Pendragon
-  module CompileHelpers
+  class Compiler < Recognizer
+    def initialize(routes)
+      @routes = routes
+    end
+
+    def call(request)
+      compile! unless compiled?
+      pattern, verb, params = parse_request(request)
+      raise_exception(400) unless valid_verb?(verb)
+      candidacies = match_with(pattern)
+      raise_exception(404) if candidacies.empty?
+      candidacies, allows = candidacies.partition{|route| route.verb == verb }
+      raise_exception(405, verbs: allows.map(&:verb)) if candidacies.empty?
+      candidacies.map{|route| [route, params_for(route, pattern, params)]}
+    end
+
+    private
+
     def compile!
       return if compiled?
       @regexps = @routes.map.with_index do |route, index|
@@ -21,16 +39,6 @@ module Pendragon
 
     def compiled?
       !!@regexps
-    end
-
-    def recognize_by_compiling_regexp(request)
-      prepare! unless prepared?
-      pattern, verb, params = parse_request(request)
-      candidacies = match_with(pattern)
-      raise_exception(404) if candidacies.empty?
-      candidacies, allows = candidacies.partition{|route| route.verb == verb }
-      raise_exception(405, verbs: allows.map(&:verb)) if candidacies.empty?
-      candidacies.map{|route| [route, params_for(route, pattern, params)]}
     end
 
     def match_with(pattern)
