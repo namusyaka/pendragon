@@ -3,7 +3,6 @@ ENV['PADRINO_ENV'] = 'test'
 PADRINO_ROOT = File.dirname(__FILE__) unless defined?(PADRINO_ROOT)
 require File.expand_path('../../lib/pendragon', __FILE__)
 
-require 'minitest/unit'
 require 'minitest/autorun'
 require 'minitest/spec'
 require 'mocha/setup'
@@ -64,24 +63,27 @@ class MiniTest::Spec
 end
 
 
-class ColoredIO
-  def initialize(io)
-    @io = io
-  end
-
-  def print(o)
-    case o
-    when "." then @io.send(:print, o.colorize(:green))
-    when "E" then @io.send(:print, o.colorize(:red))
-    when "F" then @io.send(:print, o.colorize(:yellow))
-    when "S" then @io.send(:print, o.colorize(:magenta))
-    else @io.send(:print, o)
+if defined?(MiniTest::Unit.output)
+  class ColoredIO
+    def initialize(io)
+      @io = io
+    end
+  
+    def print(o)
+      case o
+      when "." then @io.send(:print, o.colorize(:green))
+      when "E" then @io.send(:print, o.colorize(:red))
+      when "F" then @io.send(:print, o.colorize(:yellow))
+      when "S" then @io.send(:print, o.colorize(:magenta))
+      else @io.send(:print, o)
+      end
+    end
+  
+    def puts(*o)
+      super
     end
   end
-
-  def puts(*o)
-    super
-  end
+  MiniTest::Unit.output = ColoredIO.new($stdout)
+else
+  require 'minitest/pride'
 end
-
-MiniTest::Unit.output = ColoredIO.new($stdout)
