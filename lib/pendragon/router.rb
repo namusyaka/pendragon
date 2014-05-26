@@ -15,9 +15,9 @@ module Pendragon
     # Possible to pass the block
     #
     # @example with a block
-    #   app = Pendragon::Router.new do
-    #     get("/"){ "hello!" }
-    #     post("/"){ "hello post!" }
+    #   app = Pendragon::Router.new do |config|
+    #     config.enable_compiler  = true
+    #     config.auto_rack_format = false
     #   end
     #
     # @example with base style
@@ -26,7 +26,14 @@ module Pendragon
     #   app.post("/"){ "hello post!" }
     def initialize(&block)
       reset!
-      instance_eval(&block) if block_given?
+      if block_given?
+        if block.arity.zero?
+          instance_eval(&block)
+        else
+          @configuration = Configuration.new
+          block.call(configuration)
+        end
+      end
     end
 
     # Finds the routes if request method is valid
@@ -42,7 +49,7 @@ module Pendragon
 
     def invoke(route, params)
       response = route.arity != 0 ? route.call(params) : route.call
-      return response unless Pendragon.configuration.auto_rack_format?
+      return response unless configuration.auto_rack_format?
       status = route.options[:status] || 200
       header = {'Content-Type' => 'text/html;charset=utf-8'}.merge(route.options[:header] || {})
       [status, header, Array(response)]
@@ -77,7 +84,7 @@ module Pendragon
     def prepare!
       @prepared = true
       @routes.sort_by!(&:order)
-      @engine = (Pendragon.configuration.enable_compiler? ? Compiler : Recognizer).new(routes)
+      @engine = (configuration.enable_compiler? ? Compiler : Recognizer).new(routes)
     end
 
     # @return [Boolean] the router is already prepared?
@@ -117,6 +124,10 @@ module Pendragon
       extract_with_name(name, *args) do |route, params, matcher|
         matcher.mustermann? ? matcher.expand(params) : route.path
       end
+    end
+
+    def configuration
+      @configuration || Pendragon.configuration
     end
 
     private
