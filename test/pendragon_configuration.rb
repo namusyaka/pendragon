@@ -3,8 +3,9 @@ $:.unshift(File.dirname(__FILE__))
 require 'helper'
 
 describe Pendragon::Configuration do
-  setup{ ENABLE_COMPILER = false; @pendragon = pendragon }
-  teardown{ Pendragon.reset_configuration! }
+  setup do
+    @pendragon = pendragon{|config|  }
+  end
 
   describe "auto_rack_format" do
     should "set `true` as default value" do
@@ -19,10 +20,7 @@ describe Pendragon::Configuration do
         config.auto_rack_format = false
       end
 
-      p @pendragon.configuration.auto_rack_format?
       @pendragon.get("/"){ "hey" }
-      get "/"
-      p body
       assert_raises(Rack::Lint::LintError){ get "/" }
 
       @pendragon.post("/"){ [200, {'Content-Type' => 'text/html;charset=utf-8'}, ["hey"]] }

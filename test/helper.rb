@@ -21,7 +21,7 @@ end
 class MiniTest::Spec
   include Rack::Test::Methods
 
-  def pendragon
+  def pendragon(&block)
     if !block_given? && defined?(ENABLE_COMPILER)
       block = Proc.new do |config|
         config.enable_compiler = true
