@@ -2,10 +2,6 @@ require 'pendragon/engine/recognizer'
 
 module Pendragon
   class Compiler < Recognizer
-    def initialize(routes)
-      @routes = routes
-    end
-
     def call(request)
       compile! unless compiled?
       pattern, verb, params = parse_request(request)
