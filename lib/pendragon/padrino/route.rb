@@ -3,7 +3,7 @@ require 'pendragon/route'
 module Pendragon
   module Padrino
     class Route < ::Pendragon::Route
-      attr_accessor :action, :cache, :cache_key, :cache_expires_in, :parent,
+      attr_accessor :action, :cache, :cache_key, :cache_expires, :parent,
                     :use_layout, :controller, :user_agent, :path_for_generation
 
       def before_filters(&block)
