@@ -16,7 +16,7 @@ module Pendragon
     # Constructs a new instance of Pendragon::Route
     def initialize(path, verb, options = {}, &block)
       @block = block if block_given?
-      @path, @verb = path, verb
+      @path, @verb = path, verb.to_s.upcase
       @capture = {}
       @order = 0
       merge_with_options!(options)
