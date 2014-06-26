@@ -1,5 +1,8 @@
 module Pendragon
   class Recognizer
+    PATH_INFO = "PATH_INFO".freeze
+    REQUEST_METHOD = "REQUEST_METHOD".freeze
+
     def initialize(routes)
       @routes = routes
     end
@@ -34,7 +37,7 @@ module Pendragon
     # @!visibility private
     def parse_request(request)
       if request.is_a?(Hash)
-        [request['PATH_INFO'], request['REQUEST_METHOD'].upcase, {}]
+        [request[PATH_INFO], request[REQUEST_METHOD].upcase, {}]
       else
         [request.path_info, request.request_method.upcase, request.params]
       end

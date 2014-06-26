@@ -32,11 +32,14 @@ module Pendragon
   InvalidRouteException = Class.new(ArgumentError)
 
   class MethodNotAllowed < ErrorHandler
+    ALLOW   = "Allow".freeze
+    COMMA   = ", ".freeze
+
     set :status, 405
     set :body,   "Method Not Allowed"
 
     def initialize(verbs)
-      default_response[1].merge!("Allow" => verbs.map{|verb| verb.upcase } * ", ")
+      default_response[1].merge!(ALLOW => verbs.map{|verb| verb.upcase } * COMMA)
     end
   end
 

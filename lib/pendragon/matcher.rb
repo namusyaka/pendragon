@@ -2,6 +2,10 @@ require 'mustermann/sinatra'
 
 module Pendragon
   class Matcher
+    PATH_DELIMITER  = "/".freeze
+    QUERY_PREFIX    = "?".freeze
+    QUERY_DELIMITER = "&".freeze
+
     # @param [String] path The path is string or regexp.
     # @option options [Hash] :capture Set capture for path pattern.
     # @option options [Hash] :default_values Set default_values for path pattern.
@@ -9,7 +13,7 @@ module Pendragon
     # @return [Pendragon::Matcher]
     #
     def initialize(path, options = {})
-      @path = path.is_a?(String) && path.empty? ? "/" : path
+      @path = path.is_a?(String) && path.empty? ? PATH_DELIMITER : path
       @capture = options.delete(:capture)
       @default_values = options.delete(:default_values)
     end
@@ -22,7 +26,7 @@ module Pendragon
     # @return [Nil] If the pattern doesn't matched this route, return a nil.
     #
     def match(pattern)
-      pattern = pattern[0..-2] if mustermann? and pattern != "/" and pattern.end_with?("/")
+      pattern = pattern[0..-2] if mustermann? and pattern != PATH_DELIMITER and pattern.end_with?(PATH_DELIMITER)
       handler.match(pattern)
     end
 
@@ -44,7 +48,7 @@ module Pendragon
       end
       params.merge!(@default_values) if @default_values.is_a?(Hash)
       expanded_path = handler.expand(params)
-      expanded_path = expanded_path + "?" + query.map{|k,v| "#{k}=#{v}" }.join("&") unless query.empty?
+      expanded_path = expanded_path + QUERY_PREFIX + query.map{|k,v| "#{k}=#{v}" }.join(QUERY_DELIMITER) unless query.empty?
       expanded_path
     end
 

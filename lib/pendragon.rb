@@ -3,7 +3,7 @@ require 'pendragon/router'
 module Pendragon
 
   # Allow the verbs of these.
-  HTTP_VERBS = %w[GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK]
+  HTTP_VERBS = %w[GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK].freeze
 
   class << self
     # A new instance of Pendragon::Router
