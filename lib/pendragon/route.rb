@@ -53,18 +53,15 @@ module Pendragon
     end
 
     def params(pattern, parameters = {})
-      match_data, params = match(pattern), {}
+      match_data, params = match(pattern), indifferent_hash
       if match_data.names.empty?
         params.merge!(:captures => match_data.captures) unless match_data.captures.empty?
         params
       else
-        params = matcher.handler.params(pattern, :captures => match_data) || params
-        symbolize(params).merge(parameters){|key, old, new| old || new }
+        params_from_matcher = matcher.handler.params(pattern, :captures => match_data)
+        params.merge!(params_from_matcher) if params_from_matcher
+        params.merge(parameters){|key, old, new| old || new }
       end
-    end
-
-    def symbolize(parameters)
-      parameters.inject({}){|result, (key, val)| result[key.to_sym] = val; result }
     end
 
     def merge_with_options!(options)
@@ -78,6 +75,10 @@ module Pendragon
       respond_to?("#{key}=") && respond_to?(key)
     end
 
-    private :symbolize, :merge_with_options!, :accessor?
+    def indifferent_hash
+      Hash.new{|hash, key| hash[key.to_s] if key.instance_of?(Symbol) }
+    end
+
+    private :merge_with_options!, :accessor?, :indifferent_hash
   end
 end

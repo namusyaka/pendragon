@@ -36,15 +36,7 @@ module Pendragon
       if request.is_a?(Hash)
         [request['PATH_INFO'], request['REQUEST_METHOD'].downcase.to_sym, {}]
       else
-        [request.path_info, request.request_method.downcase.to_sym, parse_request_params(request.params)]
-      end
-    end
-
-    # @!visibility private
-    def parse_request_params(params)
-      params.inject({}) do |result, entry|
-        result[entry[0].to_sym] = entry[1]
-        result
+        [request.path_info, request.request_method.downcase.to_sym, request.params]
       end
     end
 
