@@ -72,7 +72,7 @@ module Pendragon
 
     # @return [Array] Returns a named captures.
     def names
-      handler.names.map(&:to_sym)
+      handler.names
     end
   end
 end

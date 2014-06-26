@@ -19,7 +19,7 @@ module Pendragon
 
     # @!visibility private
     def valid_verb?(verb)
-      Pendragon::HTTP_VERBS.include?(verb.downcase.to_sym)
+      Pendragon::HTTP_VERBS.include?(verb)
     end
 
     # @!visibility private
@@ -34,17 +34,9 @@ module Pendragon
     # @!visibility private
     def parse_request(request)
       if request.is_a?(Hash)
-        [request['PATH_INFO'], request['REQUEST_METHOD'].downcase.to_sym, {}]
+        [request['PATH_INFO'], request['REQUEST_METHOD'].upcase, {}]
       else
-        [request.path_info, request.request_method.downcase.to_sym, parse_request_params(request.params)]
-      end
-    end
-
-    # @!visibility private
-    def parse_request_params(params)
-      params.inject({}) do |result, entry|
-        result[entry[0].to_sym] = entry[1]
-        result
+        [request.path_info, request.request_method.upcase, request.params]
       end
     end
 
