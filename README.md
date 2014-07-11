@@ -73,7 +73,7 @@ pendragon = Pendragon.new do |config|
 end
 ```
 
-### Register the route
+### Register a route
 
 It has some methods to register a route. For example, `#get`, `#post` and `#delete` are so.
 This section introduces all those methods.
