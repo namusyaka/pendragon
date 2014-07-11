@@ -1,17 +1,28 @@
 require 'mustermann/sinatra'
 
 module Pendragon
+  # A class for path matching
+  #
+  # @example
+  #   matcher = Pendragon::Matcher.new("/category/:id", capture: {id: /\d+/})
+  #   matcher.match("/category/1234") #=> #<MatchData "/category/1234" id:"1234">
+  #
+  # @!visibility private
   class Matcher
+    # A character of path delimiter
     PATH_DELIMITER  = "/".freeze
+
+    # A prefix character of query string
     QUERY_PREFIX    = "?".freeze
+
+    # A character of query string delimiter
     QUERY_DELIMITER = "&".freeze
 
+    # Constructs a new instance of Pendragon::Matcher
     # @param [String] path The path is string or regexp.
     # @option options [Hash] :capture Set capture for path pattern.
     # @option options [Hash] :default_values Set default_values for path pattern.
-    #
     # @return [Pendragon::Matcher]
-    #
     def initialize(path, options = {})
       @path = path.is_a?(String) && path.empty? ? PATH_DELIMITER : path
       @capture = options.delete(:capture)
@@ -19,26 +30,20 @@ module Pendragon
     end
 
     # Do the matching.
-    #
     # @param [String] pattern The pattern is actual path (path_info etc).
-    #
     # @return [MatchData] If the pattern matched this route, return a MatchData.
     # @return [Nil] If the pattern doesn't matched this route, return a nil.
-    #
     def match(pattern)
       pattern = pattern[0..-2] if mustermann? and pattern != PATH_DELIMITER and pattern.end_with?(PATH_DELIMITER)
       handler.match(pattern)
     end
 
     # Expands the path with params.
-    #
     # @param [Hash] params The params for path pattern.
-    #
     # @example
-    # matcher = Pendragon::Matcher.new("/foo/:bar")
-    # matcher.expand(:bar => 123) #=> "/foo/123"
-    # matcher.expand(:bar => "bar", :baz => "test") #=> "/foo/bar?baz=test"
-    #
+    #   matcher = Pendragon::Matcher.new("/foo/:bar")
+    #   matcher.expand(:bar => 123) #=> "/foo/123"
+    #   matcher.expand(:bar => "bar", :baz => "test") #=> "/foo/bar?baz=test"
     # @return [String] A expaneded path.
     def expand(params)
       params = params.dup

@@ -1,7 +1,23 @@
 require 'pendragon/engine/recognizer'
 
 module Pendragon
+  # One of the engine classes for recognizing routes
+  # This engine will perform better than the recognizer engine
+  #
+  # @example
+  #   Pendragon.new do |config|
+  #     config.enable_compiler = true
+  #   end
+  #
+  # @!visibility private
   class Compiler < Recognizer
+    # Concatenates all routes, recognizes routes matched with pattern, and returns them
+    # @overload call
+    #   @param [Rack::Request] request
+    #   @raise [Pendragon::BadRequest] raised if request is bad request
+    #   @raise [Pendragon::NotFound] raised if cannot find routes that match with pattern
+    #   @raise [Pendragon::MethodNotAllowed] raised if routes can be find and do not match with verb
+    #   @return [Array] The return value will be something like [Pendragon::Route, Hash]
     def call(request)
       compile! unless compiled?
       pattern, verb, params = parse_request(request)
@@ -15,6 +31,7 @@ module Pendragon
 
     private
 
+    # @!visibility private
     def compile!
       return if compiled?
       @regexps = @routes.map.with_index do |route, index|
@@ -26,6 +43,7 @@ module Pendragon
       @regexps = compile(@regexps)
     end
 
+    # @!visibility private
     def compile(regexps, paths = [])
       return paths if regexps.length.zero?
       paths << Regexp.union(regexps)
@@ -33,10 +51,12 @@ module Pendragon
       compile(regexps, paths)
     end
 
+    # @!visibility private
     def compiled?
       !!@regexps
     end
 
+    # @!visibility private
     def match_with(pattern)
       offset = 0
       conditions = [pattern]

@@ -40,6 +40,7 @@ module Pendragon
 
     private
 
+    # @!visibility private
     def configuration_warning(method)
       warn <<-WARN
 Pendragon.#{method} is deprecated because it isn't thread-safe.

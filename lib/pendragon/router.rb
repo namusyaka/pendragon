@@ -1,13 +1,23 @@
 require 'pendragon/route'
 require 'pendragon/matcher'
-require 'pendragon/error_handler'
+require 'pendragon/error'
 require 'pendragon/configuration'
 require 'pendragon/engine/compiler'
 require 'rack'
 
 module Pendragon
+  # A class for the router
+  #
+  # @example Construct with a block which has no argument
+  #   router = Pendragon do
+  #     get("/"){ "hello world" }
+  #   end
+  #
+  # @example Construct with a block which has an argument
+  #   router = Pendragon.new do |config|
+  #     config.enable_compiler = true
+  #   end
   class Router
-
     # The accessors are useful to access from Pendragon::Route
     attr_accessor :current, :routes
 
@@ -47,6 +57,10 @@ module Pendragon
       $!.call
     end
 
+    # Calls a route, and build return value of the router
+    # @param [Pendragon::Route] route The route matched with the condition of request
+    # @param [Hash] params The params will be passed with the route
+    # @return [Array<Fixnum, Hash, Array>] The return value of the route block
     def invoke(route, params)
       response = route.arity != 0 ? route.call(params) : route.call
       return response unless configuration.auto_rack_format?
@@ -113,7 +127,7 @@ module Pendragon
       [route.name, params.inject({}){|hash, (key, value)| hash[key.to_sym] = value; hash }]
     end
 
-    # Returns a expanded path matched with the conditions as arguments
+    # Returns an expanded path matched with the conditions as arguments
     # @return [String, Regexp]
     # @example
     #   router = Pendragon.new
@@ -126,6 +140,8 @@ module Pendragon
       end
     end
 
+    # Returns Pendragon configuration
+    # @return [Pendragon::Configuration]
     def configuration
       @configuration || Pendragon.configuration
     end

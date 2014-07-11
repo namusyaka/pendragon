@@ -1,7 +1,10 @@
 module Pendragon
+  # A class for configuration of Pendragon
+  # @!visibility private
   class Configuration
-
     # Define the accessor as boolean method
+    # @example
+    #   attr_boolean_accessor :accessor_name
     def self.attr_boolean_accessor(*keys)
       keys.each do |key|
         attr_accessor key
@@ -17,6 +20,7 @@ module Pendragon
 
     # Automatically convert response into Rack format.
     # Default value is `true`.
+    # @see Pendragon::Router#invoke
     attr_boolean_accessor :auto_rack_format
 
     # Constructs an instance of Pendragon::Configuration

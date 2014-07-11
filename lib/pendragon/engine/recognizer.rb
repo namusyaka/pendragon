@@ -1,12 +1,23 @@
 module Pendragon
+  # One of the engine classes for recognizing routes
+  # @!visibility private
   class Recognizer
-    PATH_INFO = "PATH_INFO".freeze
+    # The keys for rack headers
+    PATH_INFO      = "PATH_INFO".freeze
     REQUEST_METHOD = "REQUEST_METHOD".freeze
 
+    # Constructs an instance of Pendragon::Recognizer
+    # @param [Array<Pendragon::Route>] routes
     def initialize(routes)
       @routes = routes
     end
 
+    # Recognized routes, and returns them
+    # @param [Rack::Request] request
+    # @raise [Pendragon::BadRequest] raised if request is bad request
+    # @raise [Pendragon::NotFound] raised if cannot find routes that match with pattern
+    # @raise [Pendragon::MethodNotAllowed] raised if routes can be find and do not match with verb
+    # @return [Array] The return value will be something like [Pendragon::Route, Hash]
     def call(request)
       pattern, verb, params = parse_request(request)
       raise_exception(400) unless valid_verb?(verb)
