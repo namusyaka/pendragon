@@ -2,7 +2,7 @@ module Pendragon
   # A class for configuration of Pendragon
   # @!visibility private
   class Configuration
-    # Define the accessor as boolean method
+    # Defines an accessor as boolean method
     # @example
     #   attr_boolean_accessor :accessor_name
     def self.attr_boolean_accessor(*keys)
@@ -18,7 +18,7 @@ module Pendragon
     # @see Pendragon::Router#compile
     attr_boolean_accessor :enable_compiler
 
-    # Automatically convert response into Rack format.
+    # Automatically converts response into Rack format.
     # Default value is `true`.
     # @see Pendragon::Router#invoke
     attr_boolean_accessor :auto_rack_format

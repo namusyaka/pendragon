@@ -29,7 +29,7 @@ module Pendragon
       @default_values = options.delete(:default_values)
     end
 
-    # Do the matching.
+    # Does the matching.
     # @param [String] pattern The pattern is actual path (path_info etc).
     # @return [MatchData] If the pattern matched this route, return a MatchData.
     # @return [Nil] If the pattern doesn't matched this route, return a nil.
@@ -38,7 +38,7 @@ module Pendragon
       handler.match(pattern)
     end
 
-    # Expands the path with params.
+    # Expands a path with params.
     # @param [Hash] params The params for path pattern.
     # @example
     #   matcher = Pendragon::Matcher.new("/foo/:bar")
@@ -57,11 +57,13 @@ module Pendragon
       expanded_path
     end
 
+    # Returns whether the handler is Mustermann
     # @return [Boolean] This matcher's handler is mustermann ?
     def mustermann?
       handler.instance_of?(Mustermann::Sinatra)
     end
 
+    # Returns the handler
     # @return [Mustermann::Sinatra] Returns a Mustermann::Sinatra when @path is string.
     # @return [Regexp] Returns a regexp when @path is regexp.
     def handler
@@ -74,11 +76,13 @@ module Pendragon
         end
     end
 
+    # Converts the handler into String
     # @return [String] Returns a converted handler.
     def to_s
       handler.to_s
     end
 
+    # Returns all named captures
     # @return [Array] Returns a named captures.
     def names
       handler.names
