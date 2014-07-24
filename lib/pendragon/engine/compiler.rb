@@ -29,8 +29,6 @@ module Pendragon
       candidacies.map{|route| [route, params_for(route, pattern, params)]}
     end
 
-    private
-
     # @!visibility private
     def compile!
       return if compiled?
@@ -68,5 +66,7 @@ module Pendragon
         offset = route.index + 1
       end
     end
+
+    private :compile!, :compile, :compiled?, :match_with
   end
 end

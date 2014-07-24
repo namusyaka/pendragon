@@ -24,8 +24,6 @@ module Pendragon
       fetch(pattern, verb){|route| [route, params_for(route, pattern, params)] }
     end
 
-    private
-
     # @!visibility private
     def params_for(route, pattern, params)
       route.params(pattern, params)
@@ -67,5 +65,7 @@ module Pendragon
         end
       }.(error_code)
     end
+
+    private :params_for, :valid_verb?, :fetch, :parse_request, :raise_exception
   end
 end

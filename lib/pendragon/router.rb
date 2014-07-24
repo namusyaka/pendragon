@@ -146,8 +146,6 @@ module Pendragon
       @configuration || Pendragon.configuration
     end
 
-    private
-
     # @!visibility private
     # @example
     #   extract_with_name(:index) do |route, params|
@@ -172,5 +170,7 @@ module Pendragon
       end
       raise InvalidRouteException
     end
+
+    private :extract_with_name
   end
 end

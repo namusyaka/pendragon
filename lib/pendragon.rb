@@ -38,8 +38,6 @@ module Pendragon
       @configuration = nil
     end
 
-    private
-
     # @!visibility private
     def configuration_warning(method)
       warn <<-WARN
@@ -51,5 +49,7 @@ Pendragon.new do |config|
 end
       WARN
     end
+
+    private :configuration_warning
   end
 end
