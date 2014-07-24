@@ -6,7 +6,6 @@ class FooError < RuntimeError; end
 
 describe "Pendragon::Padrino" do
   setup do
-    Padrino::Application.send(:register, Padrino::Rendering)
     Padrino::Application.send(:register, Pendragon::Padrino)
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
   end
