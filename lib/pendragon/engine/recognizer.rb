@@ -12,7 +12,7 @@ module Pendragon
       @routes = routes
     end
 
-    # Recognized routes, and returns them
+    # Recognizes routes, and returns them
     # @param [Rack::Request] request
     # @raise [Pendragon::BadRequest] raised if request is bad request
     # @raise [Pendragon::NotFound] raised if cannot find routes that match with pattern

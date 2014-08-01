@@ -17,7 +17,7 @@ module Pendragon
     #   @raise [Pendragon::BadRequest] raised if request is bad request
     #   @raise [Pendragon::NotFound] raised if cannot find routes that match with pattern
     #   @raise [Pendragon::MethodNotAllowed] raised if routes can be find and do not match with verb
-    #   @return [Array] The return value will be something like [Pendragon::Route, Hash]
+    #   @return [Array] The return value will be something like [[Pendragon::Route, Hash], ..]
     def call(request)
       compile! unless compiled?
       pattern, verb, params = parse_request(request)
