@@ -183,6 +183,6 @@ module Pendragon
       end
     end
 
-    private :extract_with
+    private :extract_with, :synchronize
   end
 end
