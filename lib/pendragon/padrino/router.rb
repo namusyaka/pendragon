@@ -15,7 +15,7 @@ module Pendragon
 
       def call(env)
         request = Rack::Request.new(env)
-        [200, {}, recognize(request)]
+        [200, {}, synchronize{ recognize(request) }]
       rescue BadRequest, NotFound, MethodNotAllowed
         $!.call
       end

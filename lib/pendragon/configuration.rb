@@ -23,10 +23,15 @@ module Pendragon
     # @see Pendragon::Router#invoke
     attr_boolean_accessor :auto_rack_format
 
+    # Enables to lock for threaded environment.
+    # If you enable this option, all requests to synchronize on a mutex lock
+    attr_boolean_accessor :lock
+
     # Constructs an instance of Pendragon::Configuration
     def initialize
       @enable_compiler  = false
       @auto_rack_format = true
+      @lock             = false
     end
 
     # Returns an instance variable

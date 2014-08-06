@@ -32,6 +32,7 @@ Depends on [rack](https://github.com/rack/rack) and [mustermann](https://github.
 |:---------------|:------|:------|:-------------------------|
 |enable_compiler |boolean|false|The performance will be improved. However, it will increase the first load time.|
 |auto_rack_format|boolean|true|If disable this param, the block of route should return the response of valid rack format.|
+|lock            |boolean|false|If you enable this option, all requests to synchronize on a mutex lock|
 
 #### `enable_compiler`
 
@@ -58,6 +59,16 @@ end
 # Disable the param
 pendragon.get("/"){ [200, {"Content-Type" => "text/html;charset=utf-8"}, ["hey"]] }
 ```
+
+#### `lock`
+
+```ruby
+pendragon = Pendragon.new do |config|
+  config.lock = true
+end
+```
+
+If you use pendragon in threaded environment, you should enable this option to avoid compiling all routes again and again.
 
 #### Deprecated
 

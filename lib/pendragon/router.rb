@@ -21,6 +21,9 @@ module Pendragon
     # The accessors are useful to access from Pendragon::Route
     attr_accessor :current, :routes
 
+    # @see Pendragon::Configuration#lock?
+    @@mutex = Mutex.new
+
     # Constructs a new instance of Pendragon::Router
     # Possible to pass the block
     #
@@ -50,8 +53,10 @@ module Pendragon
     # @return the Rack style response
     def call(env)
       request = Rack::Request.new(env)
-      recognize(request).each do |route, params|
-        catch(:pass){ return invoke(route, params) }
+      synchronize do
+        recognize(request).each do |route, params|
+          catch(:pass){ return invoke(route, params) }
+        end
       end
     rescue BadRequest, NotFound, MethodNotAllowed
       $!.call
@@ -169,6 +174,14 @@ module Pendragon
         return yield(route, params_for_expand, matcher)
       end
       raise InvalidRouteException
+    end
+
+    def synchronize(&block)
+      if configuration.lock?
+        @@mutex.synchronize(&block)
+      else
+        yield
+      end
     end
 
     private :extract_with_name
