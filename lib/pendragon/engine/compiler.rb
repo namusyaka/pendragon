@@ -39,6 +39,7 @@ module Pendragon
         /(?<_#{index}>#{regexp})/
       end
       @regexps = compile(@regexps)
+      @compiled = true
     end
 
     # @!visibility private
@@ -51,7 +52,7 @@ module Pendragon
 
     # @!visibility private
     def compiled?
-      !!@regexps
+      !!@compiled
     end
 
     # @!visibility private
