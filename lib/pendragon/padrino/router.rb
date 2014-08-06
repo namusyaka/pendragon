@@ -21,7 +21,7 @@ module Pendragon
       end
 
       def path(name, *args)
-        extract_with_name(name, *args) do |route, params, matcher|
+        extract_with(name, *args) do |route, params, matcher|
           matcher.mustermann? ? matcher.expand(params) : route.path_for_generation
         end
       end

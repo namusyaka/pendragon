@@ -140,7 +140,7 @@ module Pendragon
     #   router.path(:index, :id => 1) #=> "/1"
     #   router.path(:index, :id => 2, :foo => "bar") #=> "/1?foo=bar"
     def path(name, *args)
-      extract_with_name(name, *args) do |route, params, matcher|
+      extract_with(name, *args) do |route, params, matcher|
         matcher.mustermann? ? matcher.expand(params) : route.path
       end
     end
@@ -153,10 +153,10 @@ module Pendragon
 
     # @!visibility private
     # @example
-    #   extract_with_name(:index) do |route, params|
+    #   extract_with(:index) do |route, params|
     #     route.matcher.mustermann? ? route.matcher.expand(params) : route.path
     #   end
-    def extract_with_name(name, *args)
+    def extract_with(name, *args)
       params = args.delete_at(args.last.is_a?(Hash) ? -1 : 0) || {}
       saved_args = args.dup
       @routes.each do |route|
@@ -176,6 +176,7 @@ module Pendragon
       raise InvalidRouteException
     end
 
+    # @!visibility private
     def synchronize(&block)
       if configuration.lock?
         @@mutex.synchronize(&block)
@@ -184,6 +185,6 @@ module Pendragon
       end
     end
 
-    private :extract_with_name
+    private :extract_with
   end
 end
