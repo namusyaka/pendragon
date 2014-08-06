@@ -53,10 +53,8 @@ module Pendragon
     # @return the Rack style response
     def call(env)
       request = Rack::Request.new(env)
-      synchronize do
-        recognize(request).each do |route, params|
-          catch(:pass){ return invoke(route, params) }
-        end
+      recognize(request).each do |route, params|
+        catch(:pass){ return invoke(route, params) }
       end
     rescue BadRequest, NotFound, MethodNotAllowed
       $!.call
@@ -121,7 +119,7 @@ module Pendragon
     # @return [Array]
     def recognize(request)
       prepare! unless prepared?
-      @engine.call(request)
+      synchronize { @engine.call(request) }
     end
 
     # Recognizes a given path
