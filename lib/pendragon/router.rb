@@ -99,9 +99,9 @@ module Pendragon
     # Prepares the router for route's priority
     # This method is executed only once in the initial load
     def prepare!
-      @prepared = true
       @routes.sort_by!(&:order)
       @engine = (configuration.enable_compiler? ? Compiler : Recognizer).new(routes)
+      @prepared = true
     end
 
     # @return [Boolean] the router is already prepared?
