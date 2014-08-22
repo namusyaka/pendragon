@@ -655,7 +655,7 @@ describe "Pendragon::Padrino" do
     assert_equal 'application/javascript;charset=utf-8', response["Content-Type"]
     get "/a.json"
     assert_equal "json", body
-    assert_equal 'application/json;charset=utf-8', response["Content-Type"]
+    assert_equal 'application/json', response["Content-Type"]
     get "/a.foo"
     assert_equal "foo", body
     assert_equal 'application/foo;charset=utf-8', response["Content-Type"]

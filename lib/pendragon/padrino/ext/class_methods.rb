@@ -198,8 +198,8 @@ module Pendragon
           end
 
           # Now we need to parse our 'parent' params and parent scope.
-          if !absolute_map and parent_params = options.delete(:parent) || @_parents
-            parent_params = (Array(@_parents) + Array(parent_params)).uniq
+          if !absolute_map and parent_params = options.delete(:parent) || @_parent
+            parent_params = (Array(@_parent) + Array(parent_params)).uniq
             path = process_path_for_parent_params(path, parent_params)
           end
 
