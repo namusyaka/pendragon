@@ -36,25 +36,20 @@ module Pendragon
       end
 
       def url(*args)
-        params = args.extract_options! # parameters is hash at end
-        names, params_array = args.partition{|a| a.is_a?(Symbol)}
-        name = names[0, 2].join(" ").to_sym # route name is concatenated with underscores
-        if params.is_a?(Hash)
-          params[:format] = params[:format].to_s unless params[:format].nil?
-          params = value_to_param(params)
-        end
-        url =
-          if params_array.empty?
-            compiled_router.path(name, params)
-          else
-            compiled_router.path(name, *(params_array << params))
-          end
-        rebase_url(url)
-      rescue Pendragon::InvalidRouteException
-        route_error = "route mapping for url(#{name.inspect}) could not be found!"
-        raise ::Padrino::Routing::UnrecognizedException.new(route_error)
+        params = args.extract_options!
+        fragment = params.delete(:fragment) || params.delete(:anchor)
+        path = make_path_with_params(args, value_to_param(params.symbolize_keys))
+        rebase_url(fragment ? path << '#' << fragment : path)
       end
       alias :url_for :url
+
+      def make_path_with_params(args, params)
+        names, params_array = args.partition{ |arg| arg.is_a?(Symbol) }
+        name = names[0, 2].join(" ").to_sym
+        compiled_router.path(name, *(params_array << params))
+      rescue Pendragon::InvalidRouteException
+        raise ::Padrino::Routing::UnrecognizedException, "Route mapping for url(#{name.inspect}) could not be found"
+      end
 
       def recognize_path(path)
         responses = @router.recognize_path(path)
@@ -64,8 +59,8 @@ module Pendragon
       def rebase_url(url)
         if url.start_with?('/')
           new_url = ''
-          new_url << conform_uri(uri_root) if defined?(uri_root)
           new_url << conform_uri(ENV['RACK_BASE_URI']) if ENV['RACK_BASE_URI']
+          new_url << conform_uri(uri_root) if defined?(uri_root)
           new_url << url
         else
           url.blank? ? '/' : url
@@ -92,9 +87,11 @@ module Pendragon
 
         route_options = options.dup
         route_options[:provides] = @_provides if @_provides
+        route_options[:accepts] = @_accepts if @_accepts
+        route_options[:params] = @_params unless @_params.nil? || route_options.include?(:params)
 
-        if allow_disabled_csrf
-          unless route_options[:csrf_protection] == false
+        if protect_from_csrf && (report_csrf_failure || allow_disabled_csrf)
+          unless route_options.has_key?(:csrf_protection)
             route_options[:csrf_protection] = true
           end
         end
@@ -157,6 +154,13 @@ module Pendragon
 
       def parse_route(path, options, verb)
         route_options = {}
+
+        if options[:params] == true
+          options.delete(:params)
+        elsif options.include?(:params)
+          options[:params] ||= []
+          options[:params] += options[:with] if options[:with]
+        end
 
         # We need check if path is a symbol, if that it's a named route.
         map = options.delete(:map)

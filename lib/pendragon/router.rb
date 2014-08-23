@@ -127,7 +127,7 @@ module Pendragon
     # @return [Array]
     def recognize_path(path_info)
       route, params = recognize(Rack::MockRequest.env_for(path_info)).first
-      [route.name, params.inject({}){|hash, (key, value)| hash[key.to_sym] = value; hash }]
+      [route.name, params.inject({}){|hash, (key, value)| hash[key] = value; hash }]
     end
 
     # Returns an expanded path matched with the conditions as arguments

@@ -1,5 +1,6 @@
 require File.expand_path('../../lib/pendragon/padrino', __FILE__)
 $:.unshift(File.dirname(__FILE__))
+require 'active_support/core_ext/hash/conversions'
 require 'helper'
 
 class FooError < RuntimeError; end
@@ -8,6 +9,7 @@ describe "Pendragon::Padrino" do
   setup do
     Padrino::Application.send(:register, Pendragon::Padrino)
     Padrino::Rendering::DEFAULT_RENDERING_OPTIONS[:strict_format] = false
+    ENV['RACK_BASE_URI'] = nil
   end
 
   should "serve static files with simple cache control" do
@@ -821,6 +823,18 @@ describe "Pendragon::Padrino" do
     assert_equal "/foo", @app.url(:foo)
     ENV['RACK_BASE_URI'] = '/testing'
     assert_equal "/testing/foo", @app.url(:foo)
+    ENV['RACK_BASE_URI'] = nil
+  end
+
+  it 'should use uri_root and RACK_BASE_URI' do
+    mock_app do
+      controller :foo do
+        get(:bar){ "bar" }
+      end
+    end
+    ENV['RACK_BASE_URI'] = '/base'
+    @app.uri_root = 'testing'
+    assert_equal '/base/testing/foo/bar', @app.url(:foo, :bar)
     ENV['RACK_BASE_URI'] = nil
   end
 
@@ -1882,14 +1896,14 @@ describe "Pendragon::Padrino" do
       get(:simple, :map => "/simple/:id") { }
       get(:with_format, :with => :id, :provides => :js) { }
     end
-    assert_equal [:"foo bar", { :id => "fantastic" }], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
-    assert_equal [:"foo bar", { :id => "18" }], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
-    assert_equal [:simple, { :id => "bar" }], @app.recognize_path(@app.url(:simple, :id => "bar"))
-    assert_equal [:simple, { :id => "true" }], @app.recognize_path(@app.url(:simple, :id => true))
-    assert_equal [:simple, { :id => "9" }], @app.recognize_path(@app.url(:simple, :id => 9))
-    assert_equal [:with_format, { :id => "bar", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
-    assert_equal [:with_format, { :id => "true", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
-    assert_equal [:with_format, { :id => "9", :format => "js" }], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
+    assert_equal [:"foo bar", { :id => "fantastic" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => :fantastic))
+    assert_equal [:"foo bar", { :id => "18" }.with_indifferent_access], @app.recognize_path(@app.url(:foo, :bar, :id => 18))
+    assert_equal [:simple, { :id => "bar" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => "bar"))
+    assert_equal [:simple, { :id => "true" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => true))
+    assert_equal [:simple, { :id => "9" }.with_indifferent_access], @app.recognize_path(@app.url(:simple, :id => 9))
+    assert_equal [:with_format, { :id => "bar", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => "bar", :format => :js))
+    assert_equal [:with_format, { :id => "true", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => true, :format => "js"))
+    assert_equal [:with_format, { :id => "9", :format => "js" }.with_indifferent_access], @app.recognize_path(@app.url(:with_format, :id => 9, :format => :js))
   end
 
   should 'have current_path' do
@@ -1938,5 +1952,161 @@ describe "Pendragon::Padrino" do
     end
     get '/users//'
     assert_equal 404, status
+  end
+  describe "Padrino::ParamsProtection" do
+    before do
+      @teri = { 'name' => 'Teri Bauer', 'position' => 'baby' }
+      @kim = { 'name' => 'Kim Bauer', 'position' => 'daughter', 'child' => @teri }
+      @jack = { 'name' => 'Jack Bauer', 'position' => 'terrorist', 'child' => @kim }
+      @family = { 'name' => 'Bauer', 'persons' => { 1 => @teri, 2 => @kim, 3 => @jack } }
+    end
+
+    it 'should drop all parameters except allowed ones' do
+      result = nil
+      mock_app do
+        post :basic, :params => [ :name ] do
+          result = params
+          ''
+        end
+      end
+      post '/basic?' + @jack.to_query
+      assert_equal({ 'name' => @jack['name'] }, result)
+    end
+
+    it 'should preserve original params' do
+      result = nil
+      mock_app do
+        post :basic, :params => [ :name ] do
+          result = original_params
+          ''
+        end
+      end
+      post '/basic?' + @jack.to_query
+      assert_equal(@jack, result)
+    end
+
+    it 'should work with recursive data' do
+      result = nil
+      mock_app do
+        post :basic, :params => [ :name, :child => [ :name, :child => [ :name ] ] ] do
+          result = [params, original_params]
+          ''
+        end
+      end
+      post '/basic?' + @jack.to_query
+      assert_equal(
+        [
+          { 'name' => @jack['name'], 'child' => { 'name' => @kim['name'], 'child' => { 'name' => @teri['name'] } } },
+          @jack
+        ],
+        result
+      )
+    end
+
+    it 'should be able to process the data' do
+      result = nil
+      mock_app do
+        post :basic, :params => [ :name, :position => proc{ |v| 'anti-'+v } ] do
+          result = params
+          ''
+        end
+      end
+      post '/basic?' + @jack.to_query
+      assert_equal({ 'name' => @jack['name'], 'position' => 'anti-terrorist' }, result)
+    end
+
+    it 'should pass :with parameters' do
+      result = nil
+      mock_app do
+        post :basic, :with => [:id, :tag], :params => [ :name ] do
+          result = params
+          ''
+        end
+      end
+      post '/basic/24/42?' + @jack.to_query
+      assert_equal({ 'name' => @jack['name'], 'id' => '24', 'tag' => '42' }, result)
+    end
+
+    it 'should understand true or false values' do
+      result = nil
+      mock_app do
+        get :hide, :with => [ :id ], :params => false do
+          result = params
+          ''
+        end
+        get :show, :with => [ :id ], :params => true do
+          result = params
+          ''
+        end
+      end
+      get '/hide/1?' + @jack.to_query
+      assert_equal({"id"=>"1"}, result)
+      get '/show/1?' + @jack.to_query
+      assert_equal({"id"=>"1"}.merge(@jack), result)
+    end
+
+    it 'should be configurable with controller options' do
+      result = nil
+      mock_app do
+        controller :persons, :params => [ :name ] do
+          post :create, :params => [ :name, :position ] do
+            result = params
+            ''
+          end
+          post :update, :with => [ :id ] do
+            result = params
+            ''
+          end
+          post :delete, :params => true do
+            result = params
+            ''
+          end
+          post :destroy, :with => [ :id ], :params => false do
+            result = params
+            ''
+          end
+        end
+        controller :noparam, :params => false do
+          get :index do
+            result = params
+            ''
+          end
+        end
+      end
+      post '/persons/create?' + @jack.to_query
+      assert_equal({ 'name' => @jack['name'], 'position' => 'terrorist' }, result)
+      post '/persons/update/1?name=Chloe+O\'Brian&position=hacker'
+      assert_equal({ 'id' => '1', 'name' => 'Chloe O\'Brian' }, result)
+      post '/persons/delete?' + @jack.to_query
+      assert_equal(@jack, result)
+      post '/persons/destroy/1?' + @jack.to_query
+      assert_equal({"id"=>"1"}, result)
+      get '/noparam?a=1;b=2'
+      assert_equal({}, result)
+    end
+
+    it 'should successfully filter hashes' do
+      result = nil
+      mock_app do
+        post :family, :params => [ :persons => [ :name ] ] do
+          result = params
+          ''
+        end
+      end
+      post '/family?' + @family.to_query
+      assert_equal({"persons" => {"3" => {"name" => @jack["name"]}, "2" => {"name" => @kim["name"]}, "1" => {"name" => @teri["name"]}}}, result)
+    end
+
+    it 'should pass arrays' do
+      result = nil
+      mock_app do
+        post :family, :params => [ :names => [] ] do
+          result = params
+          ''
+        end
+      end
+      post '/family?names[]=Jack&names[]=Kim&names[]=Teri'
+      assert_equal({"names" => %w[Jack Kim Teri]}, result)
+    end
   end
 end
