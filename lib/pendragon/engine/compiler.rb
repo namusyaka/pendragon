@@ -62,7 +62,7 @@ module Pendragon
       conditions << pattern[0..-2] if pattern != Matcher::PATH_DELIMITER && pattern.end_with?(Matcher::PATH_DELIMITER)
       loop.with_object([]) do |_, candidacies|
         return candidacies unless conditions.any?{|x| @regexps[offset] === x }
-        route = @routes[offset..-1].detect{|route| Regexp.last_match("_#{route.index}") }
+        route = @routes[offset..-1].detect{|route| Regexp.last_match["_#{route.index}"] }
         candidacies << route
         offset = route.index + 1
       end
