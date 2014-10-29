@@ -11,7 +11,7 @@ Gem::Specification.new "pendragon", Pendragon::VERSION do |s|
   s.license = "MIT"
 
   s.add_dependency "rack", ">= 1.3.0"
-  s.add_dependency "mustermann", "~> 0.3.0"
+  s.add_dependency "mustermann19", "~> 0.3.0"
   s.add_development_dependency "rake", ">= 0.8.7"
   s.add_development_dependency "rack-test", ">= 0.5.0"
   s.add_development_dependency "mocha", ">= 0.10.0"
