@@ -21,6 +21,7 @@ module Pendragon
     def call(request)
       compile! unless compiled?
       pattern, verb, params = parse_request(request)
+      pattern = pattern.encode(Encoding.default_external)
       raise_exception(400) unless valid_verb?(verb)
       candidacies = match_with(pattern)
       raise_exception(404) if candidacies.empty?

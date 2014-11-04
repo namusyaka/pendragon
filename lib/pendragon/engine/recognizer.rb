@@ -20,6 +20,7 @@ module Pendragon
     # @return [Array] The return value will be something like [Pendragon::Route, Hash]
     def call(request)
       pattern, verb, params = parse_request(request)
+      pattern = pattern.encode(Encoding.default_external)
       raise_exception(400) unless valid_verb?(verb)
       fetch(pattern, verb){|route| [route, params_for(route, pattern, params)] }
     end
