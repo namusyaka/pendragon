@@ -100,6 +100,13 @@ describe Pendragon do
       get "/"
       assert_equal "yay", body
     end
+
+    should "recognize the route if non-cut pattern is matched" do
+      @pendragon.get("/hey/"){ "say" }
+      @pendragon.get("/hey"){ "yay" }
+      get "/hey/"
+      assert_equal "say", body
+    end
   end
 
   describe "route options" do
@@ -208,13 +215,6 @@ describe Pendragon do
       @pendragon.get("/hey/*"){|s| "#{s[:splat][0]} splat!" }
       get "/hey/hello/world"
       assert_equal "hello/world splat!", body
-    end
-
-    should "recognize the route if non-cut pattern is matched" do
-      @pendragon.get("/hey/"){ "say" }
-      @pendragon.get("/hey"){ "yay" }
-      get "/hey/"
-      assert_equal "say", body
     end
   end
 
