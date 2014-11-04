@@ -1,3 +1,4 @@
+# coding: utf-8
 require File.expand_path('../../lib/pendragon/padrino', __FILE__)
 $:.unshift(File.dirname(__FILE__))
 require 'active_support/core_ext/hash/conversions'

@@ -1,3 +1,4 @@
+# coding: utf-8
 require File.expand_path('../../lib/pendragon', __FILE__)
 $:.unshift(File.dirname(__FILE__))
 require 'helper'
