@@ -197,6 +197,27 @@ describe Pendragon do
     end
   end
 
+  describe "splat" do
+    should "support splat pattern" do
+      @pendragon.get("/hey/*"){|s| "#{s[:splat][0]} splat!" }
+      get "/hey/hello"
+      assert_equal "hello splat!", body
+    end
+
+    should "support splat pattern including slash" do
+      @pendragon.get("/hey/*"){|s| "#{s[:splat][0]} splat!" }
+      get "/hey/hello/world"
+      assert_equal "hello/world splat!", body
+    end
+
+    should "recognize the route if non-cut pattern is matched" do
+      @pendragon.get("/hey/"){ "say" }
+      @pendragon.get("/hey"){ "yay" }
+      get "/hey/"
+      assert_equal "say", body
+    end
+  end
+
   describe "header" do
     should "set Allow header when occur 405" do
       @pendragon.get("/"){}

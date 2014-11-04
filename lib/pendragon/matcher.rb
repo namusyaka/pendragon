@@ -34,7 +34,9 @@ module Pendragon
     # @return [MatchData] If the pattern matched this route, return a MatchData.
     # @return [Nil] If the pattern doesn't matched this route, return a nil.
     def match(pattern)
-      pattern = pattern[0..-2] if mustermann? and pattern != PATH_DELIMITER and pattern.end_with?(PATH_DELIMITER)
+      match_data = handler.match(pattern)
+      return match_data if match_data
+      pattern = pattern[0..-2] if mustermann? && pattern != PATH_DELIMITER && pattern.end_with?(PATH_DELIMITER)
       handler.match(pattern)
     end
 
