@@ -6,7 +6,7 @@ install:
 rvm:
   - 2.0.0
   - 2.1.0
-  - jruby-head
+  - jruby
   - rbx
 notifications:
   recipients:
@@ -17,4 +17,4 @@ branches:
 matrix:
   allow_failures:
     - rvm: rbx
-    - rvm: jruby-head
+    - rvm: jruby
