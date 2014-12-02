@@ -21,6 +21,9 @@ module Pendragon
     # The accessors are useful to access from Pendragon::Route
     attr_accessor :current, :routes
 
+    # Default header
+    DEFAULT_HEADER = { 'Content-Type' => 'text/html;charset=utf-8' }.freeze
+
     # @see Pendragon::Configuration#lock?
     @@mutex = Mutex.new
 
@@ -68,7 +71,7 @@ module Pendragon
       response = route.arity != 0 ? route.call(params) : route.call
       return response unless configuration.auto_rack_format?
       status = route.options[:status] || 200
-      header = {'Content-Type' => 'text/html;charset=utf-8'}.merge(route.options[:header] || {})
+      header = DEFAULT_HEADER.merge(route.options[:header] || {})
       [status, header, Array(response)]
     end
 

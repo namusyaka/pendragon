@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    pendragon (0.6.1)
+    pendragon (0.6.2)
       mustermann19 (~> 0.3.0)
       rack (>= 1.3.0)
 
