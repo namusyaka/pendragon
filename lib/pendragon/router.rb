@@ -68,6 +68,7 @@ module Pendragon
     # @yield block a block is evaluated in instance context.
     # @return [Pendragon::Router]
     def initialize(&block)
+      @compiled = false
       instance_eval(&block) if block_given?
     end
 

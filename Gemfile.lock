@@ -15,7 +15,6 @@ GEM
     mustermann (0.4.0)
       tool (~> 0.2)
     power_assert (0.3.0)
-    r2ree (0.0.1)
     rack (1.5.5)
     rack-protection (1.5.3)
       rack
@@ -39,7 +38,6 @@ DEPENDENCIES
   mocha
   modulla
   pendragon!
-  r2ree
   rack-test
   rake
   sinatra
