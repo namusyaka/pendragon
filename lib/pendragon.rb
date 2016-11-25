@@ -1,55 +1,71 @@
 require 'pendragon/router'
+require 'thread'
 
 module Pendragon
+  # Type to use if no type is given.
+  # @api private
+  DEFAULT_TYPE = :realism
 
-  # Allow the verbs of these.
-  HTTP_VERBS = %w[GET POST PUT PATCH DELETE HEAD OPTIONS LINK UNLINK].freeze
+  # Creates a new router.
+  # 
+  # @example creating new routes.
+  #   require 'pendragon'
+  #
+  #    Pendragon.new do
+  #      get('/') { [200, {}, ['hello world']] }
+  #      namespace :users do
+  #        get('/',    to: ->(env) { [200, {}, ['User page index']] })
+  #        get('/:id', to: UserApplication.new)
+  #      end
+  #    end
+  #
+  # @yield block for definig routes, it will be evaluated in instance context.
+  # @yieldreturn [Pendragon::Router]
+  def self.new(type: DEFAULT_TYPE, &block)
+    type ||= DEFAULT_TYPE
+    self[type].new(&block)
+  end
 
-  class << self
-    # A new instance of Pendragon::Router
-    # @see Pendragon::Router#initialize
-    def new(&block)
-      Router.new(&block)
-    end
-  
-    # @deprecated
-    # Yields Pendragon configuration block
-    # @example
-    #   Pendragon.configure do |config|
-    #     config.enable_compiler = true
-    #   end
-    # @see Pendragon::Configuration
-    def configure(&block)
-      configuration_warning(:configure)
-      block.call(configuration) if block_given?
-      configuration
-    end
-  
-    # @deprecated
-    # Returns Pendragon configuration
-    def configuration
-      configuration_warning(:configuration)
-      @configuration ||= Configuration.new
-    end
+  @mutex ||= Mutex.new
+  @types ||= {}
 
-    # @deprecated
-    # Resets Pendragon configuration
-    def reset_configuration!
-      @configuration = nil
+  # Returns router by given name.
+  #
+  # @example
+  #   Pendragon[:realism] #=> Pendragon::Realism
+  #
+  # @param [Symbol] name a router type identifier
+  # @raise [ArgumentError] if the name is not supported
+  # @return [Class, #new]
+  def self.[](name)
+    @types.fetch(normalized = normalize_type(name)) do
+      @mutex.synchronize do
+        error = try_require "pendragon/#{normalized}"
+        @types.fetch(normalized) do
+          fail ArgumentError,
+            "unsupported type %p #{ " (#{error.message})" if error }" % name
+        end
+      end
     end
+  end
 
-    # @!visibility private
-    def configuration_warning(method)
-      warn <<-WARN
-Pendragon.#{method} is deprecated because it isn't thread-safe.
-Please use new syntax.
-Pendragon.new do |config|
-  config.auto_rack_format = false
-  config.enable_compiler  = true
-end
-      WARN
-    end
+  # @return [LoadError, nil]
+  # @!visibility private
+  def self.try_require(path)
+    require(path)
+    nil
+  rescue LoadError => error
+    raise(error) unless error.path == path
+    error
+  end
 
-    private :configuration_warning
+  # @!visibility private
+  def self.register(name, type)
+    @types[normalize_type(name)] = type
+  end
+
+  # @!visibility private
+  def self.normalize_type(type)
+    type.to_s.gsub('-', '_').downcase
   end
 end
