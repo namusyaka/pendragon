@@ -4,8 +4,10 @@ install:
   - gem update --system
   - bundle update
 rvm:
-  - 2.0.0
-  - 2.1.0
+  - 2.1.10
+  - 2.2.6
+  - 2.3.3
+  - 2.4.0-preview3
   - jruby
   - rbx
 notifications:
