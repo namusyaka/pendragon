@@ -1,4 +1,4 @@
 
 module Pendragon
-  VERSION = '0.6.2'
+  VERSION = '1.0.0'
 end
