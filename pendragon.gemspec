@@ -1,8 +1,11 @@
 require File.expand_path("../lib/pendragon/version", __FILE__)
 
 Gem::Specification.new "pendragon", Pendragon::VERSION do |s|
-  s.description = "Provides an HTTP router for use in Rack and Padrino."
-  s.summary = s.description
+  s.description = "Toolkit for implementing HTTP Router in Ruby"
+  s.summary = <<-summary
+Pendragon is toolkit for implementing HTTP router.
+The router created by pendragon can be used as a rack application.
+  summary
   s.authors = ["namusyaka"]
   s.email = "namusyaka@gmail.com"
   s.homepage = "https://github.com/namusyaka/pendragon"
